@@ -1,0 +1,7 @@
+*.swp
+
+**/build/
+**/stm32cubemx/
+*.mxproject
+
+platform/stm32f103/Drivers
