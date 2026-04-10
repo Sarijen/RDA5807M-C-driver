@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "RDA5807M.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,7 +51,8 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
-
+void rda5807m_i2c_write(uint8_t i2c_addr, uint8_t* data, uint8_t length);
+void global_delay_ms(uint8_t ms); 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -90,6 +91,13 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
+
+  rda5807m_t handle;
+  handle.i2c_write = rda5807m_i2c_write;
+  handle.delay_ms = global_delay_ms;
+
+  rda5807m_init(&handle);
+  rda5807m_tune_frequency(&handle, 880);
 
   /* USER CODE END 2 */
 
@@ -194,7 +202,13 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void rda5807m_i2c_write(uint8_t i2c_addr, uint8_t* data, uint8_t length) {
+  HAL_I2C_Master_Transmit(&hi2c1, i2c_addr, data, length, HAL_MAX_DELAY);
+}
 
+void global_delay_ms(uint8_t ms) {
+  HAL_Delay(ms);
+}
 /* USER CODE END 4 */
 
 /**
@@ -222,8 +236,6 @@ void Error_Handler(void)
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

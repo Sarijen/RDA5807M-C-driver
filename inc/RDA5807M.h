@@ -3,15 +3,21 @@
 
 #include "stdint.h"
 
-extern void (*rda5807m_i2c_write)(uint8_t, uint8_t*, uint8_t);
-extern void (*rda5807m_delay_ms)(uint8_t);
+typedef struct {
+  void (*i2c_write)(uint8_t, uint8_t*, uint8_t); 
+  void (*delay_ms)(uint8_t);
 
-void rda5807m_init();
-void rda5807m_software_reset();
-void rda5807m_tune_frequency(uint16_t fm_frequency_mhz);
+  uint16_t reg_02H;
+  uint16_t reg_03H;
+  uint16_t reg_04H;
+  uint16_t reg_05H;
+} rda5807m_t;
+
+void rda5807m_init(rda5807m_t *handle);
+void rda5807m_software_reset(rda5807m_t *handle);
+void rda5807m_tune_frequency(rda5807m_t *handle, uint16_t fm_frequency_mhz);
 
 #define RDA5807M_I2C_ADDR (0x11 << 1)
-
 
 // ==== ==== ==== Register bit SHIFTS ==== ==== ====
 
