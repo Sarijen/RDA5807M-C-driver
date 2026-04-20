@@ -5,3 +5,4 @@
 *.mxproject
 
 platform/stm32f103/Drivers
+platform/raspberry-pico/pico_sdk_import.cmake
