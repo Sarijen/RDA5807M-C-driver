@@ -4,7 +4,14 @@ static void reg_set_bits(uint16_t* reg, uint16_t bit_shift, uint16_t bit_mask, u
 static void reg_write_direct(rda5807m_t *handle, uint8_t reg_addr, uint16_t reg_data);
 
 
-// FIXED POINT REPRESENTATION
+void rda5807m_set_volume(rda5807m_t *handle, uint8_t volume_level) {
+  reg_set_bits(&handle->reg_05H, REG_05H_VOLUME_SHIFT, REG_05H_VOLUME_MASK, volume_level);
+  reg_write_direct(handle, 0x05, handle->reg_05H);
+}
+
+
+// Frequency uses fixed point representation
+// For e.g. tuning 82.1MHz, 821 has to be the argument
 void rda5807m_tune_frequency(rda5807m_t *handle, uint16_t fm_frequency_mhz) {
   uint16_t band_start_mhz = 870; 
   uint16_t chan_spacing_khz = 100;

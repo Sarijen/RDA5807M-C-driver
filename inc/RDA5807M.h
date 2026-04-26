@@ -16,6 +16,7 @@ typedef struct {
 void rda5807m_init(rda5807m_t *handle);
 void rda5807m_software_reset(rda5807m_t *handle);
 void rda5807m_tune_frequency(rda5807m_t *handle, uint16_t fm_frequency_mhz);
+void rda5807m_set_volume(rda5807m_t *handle, uint8_t volume_level);
 
 #define RDA5807M_I2C_ADDR (0x11 << 1)
 
