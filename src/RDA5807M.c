@@ -4,6 +4,43 @@ static void reg_set_bits(uint16_t* reg, uint16_t bit_shift, uint16_t bit_mask, u
 static void reg_write_direct(rda5807m_t *handle, uint8_t reg_addr, uint16_t reg_data);
 
 
+//////////////////////////////////////
+// - CHANNEL SPACING
+//////////////////////////////////////
+
+const chan_spacing_t CHAN_SPACING_100 = {
+  .reg_bits = 0x00,
+  .value_khz = 100,
+};
+
+const chan_spacing_t CHAN_SPACING_200 = {
+  .reg_bits = 0x01,
+  .value_khz = 200,
+};
+
+const chan_spacing_t CHAN_SPACING_50 = {
+  .reg_bits = 0x02,
+  .value_khz = 50,
+};
+
+const chan_spacing_t CHAN_SPACING_25 = {
+  .reg_bits = 0x03,
+  .value_khz = 25,
+};
+
+
+//////////////////////////////////////
+// - FUNCTION DEFINITIONS
+//////////////////////////////////////
+
+void rda5807m_set_chan_spacing(rda5807m_t* handle, chan_spacing_t new_chan_spacing) {
+  handle->current_chan_spacing = new_chan_spacing;
+
+  reg_set_bits(&handle->reg_03H, REG_03H_CHAN_SELECT_SHIFT, REG_03H_CHAN_SELECT_MASK, new_chan_spacing.reg_bits);
+  reg_write_direct(handle, 0x03, handle->reg_03H);
+}
+
+
 void rda5807m_set_volume(rda5807m_t *handle, uint8_t volume_level) {
   reg_set_bits(&handle->reg_05H, REG_05H_VOLUME_SHIFT, REG_05H_VOLUME_MASK, volume_level);
   reg_write_direct(handle, 0x05, handle->reg_05H);
@@ -11,10 +48,10 @@ void rda5807m_set_volume(rda5807m_t *handle, uint8_t volume_level) {
 
 
 // Frequency uses fixed point representation
-// For e.g. tuning 82.1MHz, 821 has to be the argument
+// For e.g. when tuning 82.1MHz, 821 has to be the argument
 void rda5807m_tune_frequency(rda5807m_t *handle, uint16_t fm_frequency_mhz) {
   uint16_t band_start_mhz = 870; 
-  uint16_t chan_spacing_khz = 100;
+  uint16_t chan_spacing_khz = handle->current_chan_spacing.value_khz;
 
   uint16_t channel_number = ((fm_frequency_mhz - band_start_mhz) * chan_spacing_khz);
   channel_number /= 100;
@@ -30,6 +67,10 @@ void rda5807m_tune_frequency(rda5807m_t *handle, uint16_t fm_frequency_mhz) {
 
 
 void rda5807m_init(rda5807m_t *handle) {
+  // Set default values
+  rda5807m_set_chan_spacing(handle, CHAN_SPACING_100);
+
+
   // Enable audio output
   reg_set_bits(&handle->reg_02H, REG_02H_AUDIO_OUTPUT_SHIFT, REG_02H_AUDIO_OUTPUT_MASK, 1);
 

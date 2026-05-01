@@ -3,6 +3,17 @@
 
 #include "stdint.h"
 
+
+//////////////////////////////////////
+// - STRUCTS
+//////////////////////////////////////
+
+typedef struct {
+  uint8_t reg_bits;
+  uint16_t value_khz;
+} chan_spacing_t;
+
+
 typedef struct {
   void (*i2c_write)(uint8_t, uint8_t*, uint8_t); 
   void (*delay_ms)(uint8_t);
@@ -11,16 +22,41 @@ typedef struct {
   uint16_t reg_03H;
   uint16_t reg_04H;
   uint16_t reg_05H;
+
+  chan_spacing_t current_chan_spacing;
 } rda5807m_t;
+
+
+//////////////////////////////////////
+// - FUNCTION DECLARATIONS
+//////////////////////////////////////
 
 void rda5807m_init(rda5807m_t *handle);
 void rda5807m_software_reset(rda5807m_t *handle);
+void rda5807m_set_chan_spacing(rda5807m_t* handle, chan_spacing_t new_chan_spacing);
+
 void rda5807m_tune_frequency(rda5807m_t *handle, uint16_t fm_frequency_mhz);
 void rda5807m_set_volume(rda5807m_t *handle, uint8_t volume_level);
 
+
+//////////////////////////////////////
+// - CHANNEL SPACING
+//////////////////////////////////////
+
+extern const chan_spacing_t CHAN_SPACING_100;
+
+extern const chan_spacing_t CHAN_SPACING_200;
+
+extern const chan_spacing_t CHAN_SPACING_50;
+
+extern const chan_spacing_t CHAN_SPACING_25;
+
 #define RDA5807M_I2C_ADDR (0x11 << 1)
 
-// ==== ==== ==== Register bit SHIFTS ==== ==== ====
+
+//////////////////////////////////////
+// - REGISTER BIT SHIFTS
+//////////////////////////////////////
 
 // Register 0x02
 #define REG_02H_ENABLE_SHIFT 0
@@ -79,7 +115,9 @@ void rda5807m_set_volume(rda5807m_t *handle, uint8_t volume_level);
 #define REG_0BH_RSSI_SHIFT  9
 
 
-// ==== ==== ==== Register bit MASKS ==== ==== ====
+//////////////////////////////////////
+// - REGISTER BIT MASKS
+//////////////////////////////////////
 
 // Register 0x02
 #define REG_02H_ENABLE_MASK  0x01
@@ -135,5 +173,6 @@ void rda5807m_set_volume(rda5807m_t *handle, uint8_t volume_level);
 #define REG_0BH_FM_READY_MASK  0x01
 #define REG_0BH_IS_STATION_MASK  0x01
 #define REG_0BH_RSSI_MASK  0x77
+
 
 #endif
