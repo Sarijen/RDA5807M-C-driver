@@ -2,11 +2,18 @@
 #define RDA5807M
 
 #include "stdint.h"
-
+#include "stdbool.h"
 
 //////////////////////////////////////
 // - STRUCTS
 //////////////////////////////////////
+
+typedef struct {
+  uint8_t reg_bits;
+  uint16_t freq_start;
+  uint16_t freq_end;
+} rda5807m_freq_band_t;
+
 
 typedef struct {
   uint8_t reg_bits;
@@ -22,7 +29,10 @@ typedef struct {
   uint16_t reg_03H;
   uint16_t reg_04H;
   uint16_t reg_05H;
+//         reg 06H is not used
+  uint16_t reg_07H;
 
+  rda5807m_freq_band_t current_freq_band;
   chan_spacing_t current_chan_spacing;
 } rda5807m_t;
 
@@ -33,10 +43,26 @@ typedef struct {
 
 void rda5807m_init(rda5807m_t *handle);
 void rda5807m_software_reset(rda5807m_t *handle);
+void rda5807m_set_frequency_band(rda5807m_t* handle, rda5807m_freq_band_t new_freq_band);
 void rda5807m_set_chan_spacing(rda5807m_t* handle, chan_spacing_t new_chan_spacing);
 
 void rda5807m_tune_frequency(rda5807m_t *handle, uint16_t fm_frequency_mhz);
 void rda5807m_set_volume(rda5807m_t *handle, uint8_t volume_level);
+
+
+//////////////////////////////////////
+// - FREQUENCY BANDS
+//////////////////////////////////////
+
+extern const rda5807m_freq_band_t rda5807m_band_50_65;
+
+extern const rda5807m_freq_band_t rda5807m_band_65_76;
+
+extern const rda5807m_freq_band_t rda5807m_band_76_91;
+
+extern const rda5807m_freq_band_t rda5807m_band_76_108;
+
+extern const rda5807m_freq_band_t rda5807m_band_87_108;
 
 
 //////////////////////////////////////
