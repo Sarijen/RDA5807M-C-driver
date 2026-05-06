@@ -67,6 +67,34 @@ const chan_spacing_t CHAN_SPACING_25 = {
 // - FUNCTION DEFINITIONS
 //////////////////////////////////////
 
+// Frequency uses fixed point representation
+// For e.g. when tuning 82.1MHz, 821 has to be the argument
+void rda5807m_tune_frequency(rda5807m_t *handle, uint16_t new_frequency_mhz) {
+  uint16_t freq_band_start = handle->current_freq_band.freq_start;
+  uint16_t freq_band_end = handle->current_freq_band.freq_end;
+  uint16_t chan_spacing_khz = handle->current_chan_spacing.value_khz;
+
+
+  if (new_frequency_mhz < freq_band_start) {
+    new_frequency_mhz = freq_band_start;
+  } else if (new_frequency_mhz > freq_band_end) {
+    new_frequency_mhz = freq_band_end;
+  }
+  handle->current_freq = new_frequency_mhz;
+
+
+  uint16_t channel_number = ((new_frequency_mhz - freq_band_start)*100) / chan_spacing_khz;
+
+  reg_set_bits(&handle->reg_03H, REG_03H_CHAN_SELECT_SHIFT, REG_03H_CHAN_SELECT_MASK, channel_number);
+
+
+  // Tune to apply the frequency
+  reg_set_bits(&handle->reg_03H, REG_03H_TUNE_SHIFT, REG_03H_TUNE_MASK, 1);
+
+  reg_write_direct(handle, 0x03, handle->reg_03H);
+}
+
+
 void rda5807m_set_frequency_band(rda5807m_t* handle, rda5807m_freq_band_t new_freq_band) {
   handle->current_freq_band = new_freq_band;
 
@@ -96,25 +124,6 @@ void rda5807m_set_chan_spacing(rda5807m_t* handle, chan_spacing_t new_chan_spaci
 void rda5807m_set_volume(rda5807m_t *handle, uint8_t volume_level) {
   reg_set_bits(&handle->reg_05H, REG_05H_VOLUME_SHIFT, REG_05H_VOLUME_MASK, volume_level);
   reg_write_direct(handle, 0x05, handle->reg_05H);
-}
-
-
-// Frequency uses fixed point representation
-// For e.g. when tuning 82.1MHz, 821 has to be the argument
-void rda5807m_tune_frequency(rda5807m_t *handle, uint16_t fm_frequency_mhz) {
-  uint16_t band_start_mhz = 870; 
-  uint16_t chan_spacing_khz = handle->current_chan_spacing.value_khz;
-
-  uint16_t channel_number = ((fm_frequency_mhz - band_start_mhz) * chan_spacing_khz);
-  channel_number /= 100;
-
-  reg_set_bits(&handle->reg_03H, REG_03H_CHAN_SELECT_SHIFT, REG_03H_CHAN_SELECT_MASK, channel_number);
-
-
-  // Tune to apply the frequency
-  reg_set_bits(&handle->reg_03H, REG_03H_TUNE_SHIFT, REG_03H_TUNE_MASK, 1);
-
-  reg_write_direct(handle, 0x03, handle->reg_03H);
 }
 
 
