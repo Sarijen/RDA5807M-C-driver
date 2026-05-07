@@ -4,6 +4,9 @@
 #include "stdint.h"
 #include "stdbool.h"
 
+
+#define RDA5807M_I2C_ADDR (0x11 << 1)
+
 //////////////////////////////////////
 // - STRUCTS
 //////////////////////////////////////
@@ -42,13 +45,13 @@ typedef struct {
 // - FUNCTION DECLARATIONS
 //////////////////////////////////////
 
-void rda5807m_init(rda5807m_t *handle);
-void rda5807m_software_reset(rda5807m_t *handle);
+void rda5807m_init(rda5807m_t* handle);
+void rda5807m_software_reset(rda5807m_t* handle);
 void rda5807m_set_frequency_band(rda5807m_t* handle, rda5807m_freq_band_t new_freq_band);
 void rda5807m_set_chan_spacing(rda5807m_t* handle, chan_spacing_t new_chan_spacing);
 
-void rda5807m_tune_frequency(rda5807m_t *handle, uint16_t new_frequency_mhz);
-void rda5807m_set_volume(rda5807m_t *handle, uint8_t volume_level);
+void rda5807m_tune_frequency(rda5807m_t* handle, uint16_t new_frequency_mhz);
+void rda5807m_set_volume(rda5807m_t* handle, uint8_t volume_level);
 
 
 //////////////////////////////////////
@@ -77,8 +80,6 @@ extern const chan_spacing_t CHAN_SPACING_200;
 extern const chan_spacing_t CHAN_SPACING_50;
 
 extern const chan_spacing_t CHAN_SPACING_25;
-
-#define RDA5807M_I2C_ADDR (0x11 << 1)
 
 
 //////////////////////////////////////

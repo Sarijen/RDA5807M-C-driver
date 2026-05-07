@@ -1,7 +1,7 @@
 #include "RDA5807M.h"
 
 static void reg_set_bits(uint16_t* reg, uint16_t bit_shift, uint16_t bit_mask, uint16_t bits);
-static void reg_write_direct(rda5807m_t *handle, uint8_t reg_addr, uint16_t reg_data);
+static void reg_write_direct(rda5807m_t* handle, uint8_t reg_addr, uint16_t reg_data);
 
 //////////////////////////////////////
 // - FREQUENCY BANDS
@@ -69,7 +69,7 @@ const chan_spacing_t CHAN_SPACING_25 = {
 
 // Frequency uses fixed point representation
 // For e.g. when tuning 82.1MHz, 821 has to be the argument
-void rda5807m_tune_frequency(rda5807m_t *handle, uint16_t new_frequency_mhz) {
+void rda5807m_tune_frequency(rda5807m_t* handle, uint16_t new_frequency_mhz) {
   uint16_t freq_band_start = handle->current_freq_band.freq_start;
   uint16_t freq_band_end = handle->current_freq_band.freq_end;
   uint16_t chan_spacing_khz = handle->current_chan_spacing.value_khz;
@@ -110,6 +110,13 @@ void rda5807m_set_frequency_band(rda5807m_t* handle, rda5807m_freq_band_t new_fr
   reg_set_bits(&handle->reg_07H, REG_07H_65M_50M_MODE_SHIFT, REG_07H_65M_50M_MODE_MASK, uses_65m_50m_mode);
   reg_write_direct(handle, 0x07, handle->reg_07H);
 
+
+  // Retune if current frequency is not within the new band frequency range
+  if (handle->current_freq < new_freq_band.freq_start) {
+    rda5807m_tune_frequency(handle, new_freq_band.freq_start);
+  } else if (handle->current_freq > new_freq_band.freq_end) {
+    rda5807m_tune_frequency(handle, new_freq_band.freq_end);
+  }
 }
 
 
@@ -121,13 +128,13 @@ void rda5807m_set_chan_spacing(rda5807m_t* handle, chan_spacing_t new_chan_spaci
 }
 
 
-void rda5807m_set_volume(rda5807m_t *handle, uint8_t volume_level) {
+void rda5807m_set_volume(rda5807m_t* handle, uint8_t volume_level) {
   reg_set_bits(&handle->reg_05H, REG_05H_VOLUME_SHIFT, REG_05H_VOLUME_MASK, volume_level);
   reg_write_direct(handle, 0x05, handle->reg_05H);
 }
 
 
-void rda5807m_init(rda5807m_t *handle) {
+void rda5807m_init(rda5807m_t* handle) {
   // Set default values
   rda5807m_set_chan_spacing(handle, CHAN_SPACING_100);
 
@@ -148,7 +155,7 @@ void rda5807m_init(rda5807m_t *handle) {
 }
 
 
-void rda5807m_software_reset(rda5807m_t *handle) {
+void rda5807m_software_reset(rda5807m_t* handle) {
   reg_set_bits(&handle->reg_02H, REG_02H_RESET_SHIFT, REG_02H_RESET_MASK, 1);
 
   reg_write_direct(handle, 0x02, handle->reg_02H);
@@ -167,7 +174,7 @@ static void reg_set_bits(uint16_t* reg, uint16_t bit_shift, uint16_t bit_mask, u
 }
 
 
-static void reg_write_direct(rda5807m_t *handle, uint8_t reg_addr, uint16_t reg_data) {
+static void reg_write_direct(rda5807m_t* handle, uint8_t reg_addr, uint16_t reg_data) {
   uint8_t temp_buf[3] = {
     reg_addr,
     (uint8_t)(reg_data >> 8), // High byte
