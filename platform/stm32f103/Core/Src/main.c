@@ -203,7 +203,7 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 void rda5807m_i2c_write(uint8_t i2c_addr, uint8_t* data, uint8_t length) {
-  HAL_I2C_Master_Transmit(&hi2c1, i2c_addr, data, length, HAL_MAX_DELAY);
+  HAL_I2C_Master_Transmit(&hi2c1, (i2c_addr << 1), data, length, HAL_MAX_DELAY);
 }
 
 void global_delay_ms(uint8_t ms) {

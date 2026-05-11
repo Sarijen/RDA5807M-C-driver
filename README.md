@@ -34,7 +34,7 @@ This example shows tuning 88.0 MHz on the STM32F103
 #define EXAMPLE_TUNE_FREQUENCY 880
 
 void my_i2c1_write(uint8_t i2c_addr, uint8_t* data, uint8_t length) {
-  HAL_I2C_Master_Transmit(&hi2c1, i2c_addr, data, length, HAL_MAX_DELAY);
+  HAL_I2C_Master_Transmit(&hi2c1, (i2c_addr << 1), data, length, HAL_MAX_DELAY);
 }
 
 

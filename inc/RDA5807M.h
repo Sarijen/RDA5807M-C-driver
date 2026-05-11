@@ -5,7 +5,7 @@
 #include "stdbool.h"
 
 
-#define RDA5807M_I2C_ADDR (0x11 << 1)
+#define RDA5807M_I2C_ADDR 0x11
 
 //////////////////////////////////////
 // - STRUCTS
