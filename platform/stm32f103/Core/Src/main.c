@@ -92,7 +92,7 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
-  rda5807m_t handle;
+  static rda5807m_t handle;
   handle.i2c_write = rda5807m_i2c_write;
   handle.delay_ms = global_delay_ms;
 

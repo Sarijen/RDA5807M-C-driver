@@ -44,7 +44,7 @@ void my_delay_ms(uint8_t ms) {
 
 
 int main(void) {
-  rda5807m_t handle;
+  static rda5807m_t handle;
   handle.i2c_write = my_i2c1_write;
   handle.delay_ms = my_delay_ms;
 

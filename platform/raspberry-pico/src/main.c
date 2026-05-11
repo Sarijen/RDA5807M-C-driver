@@ -15,7 +15,7 @@ void global_delay_ms(uint8_t ms);
 
 
 int main() {
-  rda5807m_t handle;
+  static rda5807m_t handle;
   handle.i2c_write = rda5807m_i2c_write;
   handle.delay_ms = global_delay_ms;
 
