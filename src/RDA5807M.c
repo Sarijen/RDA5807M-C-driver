@@ -137,6 +137,7 @@ void rda5807m_set_volume(rda5807m_t* handle, uint8_t volume_level) {
 void rda5807m_init(rda5807m_t* handle) {
   // Set default values
   rda5807m_set_chan_spacing(handle, CHAN_SPACING_100);
+  rda5807m_set_frequency_band(handle, rda5807m_band_76_108);
 
 
   // Enable audio output
@@ -149,19 +150,17 @@ void rda5807m_init(rda5807m_t* handle) {
   reg_set_bits(&handle->reg_02H, REG_02H_ENABLE_SHIFT, REG_02H_ENABLE_MASK, 1);
 
   rda5807m_software_reset(handle);
-
-  reg_write_direct(handle, 0x02, handle->reg_02H);
-  handle->delay_ms(0.5); // 50us
 }
 
 
 void rda5807m_software_reset(rda5807m_t* handle) {
   reg_set_bits(&handle->reg_02H, REG_02H_RESET_SHIFT, REG_02H_RESET_MASK, 1);
-
   reg_write_direct(handle, 0x02, handle->reg_02H);
-  handle->delay_ms(0.5); // 50us
+  handle->delay_ms(1);
 
   reg_set_bits(&handle->reg_02H, REG_02H_RESET_SHIFT, REG_02H_RESET_MASK, 0);
+  reg_write_direct(handle, 0x02, handle->reg_02H);
+  handle->delay_ms(1);
 }
 
 
