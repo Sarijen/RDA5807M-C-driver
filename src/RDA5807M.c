@@ -1,7 +1,7 @@
 #include "RDA5807M.h"
 
 static void reg_set_bits(uint16_t* reg, uint16_t bit_shift, uint16_t bit_mask, uint16_t bits);
-static void reg_write_direct(rda5807m_t* handle, uint8_t reg_addr, uint16_t reg_data);
+static rda5807m_status_t reg_write_direct(rda5807m_t* handle, uint8_t reg_addr, uint16_t reg_data);
 
 //////////////////////////////////////
 // - FREQUENCY BANDS
@@ -173,12 +173,12 @@ static void reg_set_bits(uint16_t* reg, uint16_t bit_shift, uint16_t bit_mask, u
 }
 
 
-static void reg_write_direct(rda5807m_t* handle, uint8_t reg_addr, uint16_t reg_data) {
+static rda5807m_status_t reg_write_direct(rda5807m_t* handle, uint8_t reg_addr, uint16_t reg_data) {
   uint8_t temp_buf[3] = {
     reg_addr,
-    (uint8_t)(reg_data >> 8), // High byte
+    (uint8_t)(reg_data >> 8),   // High byte
     (uint8_t)(reg_data & 0xFF), // Low byte
   };
 
-  handle->i2c_write(RDA5807M_I2C_ADDR, temp_buf, sizeof(temp_buf));
+  return handle->i2c_write(RDA5807M_I2C_ADDR, temp_buf, sizeof(temp_buf));
 }

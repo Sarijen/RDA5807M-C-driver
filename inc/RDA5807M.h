@@ -7,6 +7,11 @@
 
 #define RDA5807M_I2C_ADDR 0x11
 
+typedef enum {
+  RDA5807M_OK = 0,
+  RDA5807M_ERROR,
+} rda5807m_status_t;
+
 //////////////////////////////////////
 // - STRUCTS
 //////////////////////////////////////
@@ -25,7 +30,7 @@ typedef struct {
 
 
 typedef struct {
-  void (*i2c_write)(uint8_t, uint8_t*, uint8_t); 
+  rda5807m_status_t (*i2c_write)(uint8_t, uint8_t*, uint8_t); 
   void (*delay_ms)(uint8_t);
 
   uint16_t reg_02H;

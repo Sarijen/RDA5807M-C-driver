@@ -30,20 +30,19 @@ This example shows tuning 88.0 MHz on the STM32F103
 ```c
 #include "RDA5807M.h"
 
+rda5807m_status_t my_i2c1_write(uint8_t i2c_addr, uint8_t* data, uint8_t length);
+void my_delay_ms(uint8_t ms);
+
 // Frequencies use fixed point representation ( FREQ_FLOAT*10 )
 #define EXAMPLE_TUNE_FREQUENCY 880
 
-void my_i2c1_write(uint8_t i2c_addr, uint8_t* data, uint8_t length) {
-  HAL_I2C_Master_Transmit(&hi2c1, (i2c_addr << 1), data, length, HAL_MAX_DELAY);
-}
-
-
-void my_delay_ms(uint8_t ms) {
-  HAL_Delay(ms);
-}
-
 
 int main(void) {
+/*
+  Never forget to init i2c!
+  MX_I2C1_Init(); For example
+*/
+
   static rda5807m_t handle;
   handle.i2c_write = my_i2c1_write;
   handle.delay_ms = my_delay_ms;
@@ -53,6 +52,29 @@ int main(void) {
 
   return 0;
 }
+
+
+rda5807m_status_t my_i2c1_write(uint8_t i2c_addr, uint8_t* data, uint8_t length) {
+  HAL_StatusTypeDef result = HAL_I2C_Master_Transmit(
+      &hi2c1,
+      (i2c_addr << 1),
+      data,
+      length,
+      HAL_MAX_DELAY
+  );
+
+  if (result == HAL_OK) {
+    return RDA5807M_OK;
+  } else {
+    return RDA5807M_ERROR;
+  }
+}
+
+
+void my_delay_ms(uint8_t ms) {
+  HAL_Delay(ms);
+}
+
 ```
 
 - Working examples for specific MCU platforms can be found in the [platform](platform/) directory
