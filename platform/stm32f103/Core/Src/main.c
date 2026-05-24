@@ -51,7 +51,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
-rda5807m_status_t rda5807m_i2c_write(uint8_t i2c_addr, uint8_t* data, uint8_t length);
+rda_status_t rda5807m_i2c_write(uint8_t i2c_addr, uint8_t* data, uint8_t length);
 void global_delay_ms(uint8_t ms); 
 /* USER CODE END PFP */
 
@@ -202,7 +202,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-rda5807m_status_t rda5807m_i2c_write(uint8_t i2c_addr, uint8_t* data, uint8_t length) {
+rda_status_t rda5807m_i2c_write(uint8_t i2c_addr, uint8_t* data, uint8_t length) {
   HAL_StatusTypeDef result = HAL_I2C_Master_Transmit(
       &hi2c1,
       (i2c_addr << 1),
@@ -212,9 +212,9 @@ rda5807m_status_t rda5807m_i2c_write(uint8_t i2c_addr, uint8_t* data, uint8_t le
   );
 
   if (result == HAL_OK) {
-    return RDA5807M_OK;
+    return RDA_OK;
   } else {
-    return RDA5807M_I2C_ERROR;
+    return RDA_I2C_ERROR;
   }
 }
 

@@ -10,7 +10,7 @@
 #define EXAMPLE_TUNE_FREQUENCY 880
 
 void my_i2c0_init();
-rda5807m_status_t rda5807m_i2c_write(uint8_t i2c_addr, uint8_t* data, uint8_t length);
+rda_status_t rda5807m_i2c_write(uint8_t i2c_addr, uint8_t* data, uint8_t length);
 void global_delay_ms(uint8_t ms);
 
 
@@ -34,13 +34,13 @@ void my_i2c0_init() {
 }
 
 
-rda5807m_status_t rda5807m_i2c_write(uint8_t i2c_addr, uint8_t* data, uint8_t length) {
+rda_status_t rda5807m_i2c_write(uint8_t i2c_addr, uint8_t* data, uint8_t length) {
   int result = i2c_write_blocking(i2c0, i2c_addr, data, length, false);
 
   if (result == PICO_OK) {
-    return RDA5807M_OK;
+    return RDA_OK;
   } else {
-    return RDA5807M_I2C_ERROR;
+    return RDA_I2C_ERROR;
   }
 }
 
