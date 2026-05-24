@@ -40,7 +40,7 @@ rda5807m_status_t rda5807m_i2c_write(uint8_t i2c_addr, uint8_t* data, uint8_t le
   if (result == PICO_OK) {
     return RDA5807M_OK;
   } else {
-    return RDA5807M_ERROR;
+    return RDA5807M_I2C_ERROR;
   }
 }
 

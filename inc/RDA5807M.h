@@ -9,7 +9,7 @@
 
 typedef enum {
   RDA5807M_OK = 0,
-  RDA5807M_ERROR,
+  RDA5807M_I2C_ERROR = -1,
 } rda5807m_status_t;
 
 //////////////////////////////////////
@@ -50,13 +50,13 @@ typedef struct {
 // - FUNCTION DECLARATIONS
 //////////////////////////////////////
 
-void rda5807m_init(rda5807m_t* handle);
-void rda5807m_software_reset(rda5807m_t* handle);
-void rda5807m_set_frequency_band(rda5807m_t* handle, rda5807m_freq_band_t new_freq_band);
-void rda5807m_set_chan_spacing(rda5807m_t* handle, chan_spacing_t new_chan_spacing);
+rda5807m_status_t rda5807m_init(rda5807m_t* handle);
+rda5807m_status_t rda5807m_software_reset(rda5807m_t* handle);
+rda5807m_status_t rda5807m_set_frequency_band(rda5807m_t* handle, rda5807m_freq_band_t new_freq_band);
+rda5807m_status_t rda5807m_set_chan_spacing(rda5807m_t* handle, chan_spacing_t new_chan_spacing);
 
-void rda5807m_tune_frequency(rda5807m_t* handle, uint16_t new_frequency_mhz);
-void rda5807m_set_volume(rda5807m_t* handle, uint8_t volume_level);
+rda5807m_status_t rda5807m_tune_frequency(rda5807m_t* handle, uint16_t new_frequency_mhz);
+rda5807m_status_t rda5807m_set_volume(rda5807m_t* handle, uint8_t volume_level);
 
 
 //////////////////////////////////////

@@ -15,7 +15,7 @@ cmake -B build -DPICO_SDK_PATH="path/to/your/pico-sdk" .
 cd build && make -j$(nproc)
 ```
 
-`ST7567_pico_example.uf2` should now be located in the `build/` directory.
+`ST7567_pico_example.uf2` should now be located in the `build/` directory, ready to be flashed.
 
 - `-j$(nproc)` distributes the compilation process into as many threads as the number of physical threads in your CPU. If this is not desired, you can omit it.
 
