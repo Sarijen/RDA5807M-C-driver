@@ -30,7 +30,7 @@ This example shows tuning 88.0 MHz on the STM32F103
 ```c
 #include "RDA5807M.h"
 
-rda5807m_status_t my_i2c1_write(uint8_t i2c_addr, uint8_t* data, uint8_t length);
+rda_status_t my_i2c1_write(uint8_t i2c_addr, uint8_t* data, uint8_t length);
 void my_delay_ms(uint8_t ms);
 
 // Frequencies use fixed point representation ( FREQ_FLOAT*10 )
@@ -54,7 +54,7 @@ int main(void) {
 }
 
 
-rda5807m_status_t my_i2c1_write(uint8_t i2c_addr, uint8_t* data, uint8_t length) {
+rda_status_t my_i2c1_write(uint8_t i2c_addr, uint8_t* data, uint8_t length) {
   HAL_StatusTypeDef result = HAL_I2C_Master_Transmit(
       &hi2c1,
       (i2c_addr << 1),
@@ -64,9 +64,9 @@ rda5807m_status_t my_i2c1_write(uint8_t i2c_addr, uint8_t* data, uint8_t length)
   );
 
   if (result == HAL_OK) {
-    return RDA5807M_OK;
+    return RDA_OK;
   } else {
-    return RDA5807M_ERROR;
+    return RDA_I2C_ERROR;
   }
 }
 
