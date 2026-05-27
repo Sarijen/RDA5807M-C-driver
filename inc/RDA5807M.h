@@ -1,8 +1,9 @@
 #ifndef RDA5807M
 #define RDA5807M
 
-#include "stdint.h"
-#include "stdbool.h"
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
 
 
 #define RDA5807M_I2C_ADDR 0x11
@@ -10,6 +11,7 @@
 typedef enum {
   RDA_OK = 0,
   RDA_I2C_ERROR = -1,
+  RDA_ERR_INVALID_ARG = -2,
 } rda_status_t;
 
 //////////////////////////////////////

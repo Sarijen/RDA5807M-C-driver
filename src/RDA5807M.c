@@ -1,5 +1,6 @@
 #include "RDA5807M.h"
 
+static rda_status_t validate_handle(const rda5807m_t* handle);
 static void reg_set_bits(uint16_t* reg, uint16_t bit_shift, uint16_t bit_mask, uint16_t bits);
 static rda_status_t reg_write_direct(rda5807m_t* handle, uint8_t reg_addr, uint16_t reg_data);
 
@@ -70,7 +71,9 @@ const chan_spacing_t CHAN_SPACING_25 = {
 // Frequency uses fixed point representation
 // For e.g. when tuning 82.1MHz, 821 has to be the argument
 rda_status_t rda5807m_tune_frequency(rda5807m_t* handle, uint16_t new_frequency_mhz) {
-  rda_status_t r = RDA_OK;
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
 
   uint16_t freq_band_start = handle->current_freq_band.freq_start;
   uint16_t freq_band_end = handle->current_freq_band.freq_end;
@@ -100,7 +103,8 @@ rda_status_t rda5807m_tune_frequency(rda5807m_t* handle, uint16_t new_frequency_
 
 
 rda_status_t rda5807m_set_frequency_band(rda5807m_t* handle, rda5807m_freq_band_t new_freq_band) {
-  rda_status_t r = RDA_OK;
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
 
 
   reg_set_bits(&handle->reg_03H, REG_03H_BAND_SELECT_SHIFT, REG_03H_BAND_SELECT_MASK, new_freq_band.reg_bits);
@@ -132,7 +136,9 @@ rda_status_t rda5807m_set_frequency_band(rda5807m_t* handle, rda5807m_freq_band_
 
 
 rda_status_t rda5807m_set_chan_spacing(rda5807m_t* handle, chan_spacing_t new_chan_spacing) {
-  rda_status_t r = RDA_OK;
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
 
   reg_set_bits(&handle->reg_03H, REG_03H_CHAN_SELECT_SHIFT, REG_03H_CHAN_SELECT_MASK, new_chan_spacing.reg_bits);
   r = reg_write_direct(handle, 0x03, handle->reg_03H);
@@ -145,7 +151,9 @@ rda_status_t rda5807m_set_chan_spacing(rda5807m_t* handle, chan_spacing_t new_ch
 
 
 rda_status_t rda5807m_set_volume(rda5807m_t* handle, uint8_t volume_level) {
-  rda_status_t r = RDA_OK;
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
 
   reg_set_bits(&handle->reg_05H, REG_05H_VOLUME_SHIFT, REG_05H_VOLUME_MASK, volume_level);
   r = reg_write_direct(handle, 0x05, handle->reg_05H);
@@ -155,6 +163,9 @@ rda_status_t rda5807m_set_volume(rda5807m_t* handle, uint8_t volume_level) {
 
 
 rda_status_t rda5807m_init(rda5807m_t* handle) {
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
   // Set default values
   rda5807m_set_chan_spacing(handle, CHAN_SPACING_100);
   rda5807m_set_frequency_band(handle, rda5807m_band_76_108);
@@ -174,7 +185,8 @@ rda_status_t rda5807m_init(rda5807m_t* handle) {
 
 
 rda_status_t rda5807m_software_reset(rda5807m_t* handle) {
-  rda_status_t r = RDA_OK;
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
 
   reg_set_bits(&handle->reg_02H, REG_02H_RESET_SHIFT, REG_02H_RESET_MASK, 1);
   r = reg_write_direct(handle, 0x02, handle->reg_02H);
@@ -187,6 +199,17 @@ rda_status_t rda5807m_software_reset(rda5807m_t* handle) {
   handle->delay_ms(1);
 
   return r;
+}
+
+
+static rda_status_t validate_handle(const rda5807m_t* handle) {
+  if (handle == NULL ||
+    handle->i2c_write == NULL ||
+    handle->delay_ms == NULL) {
+    return RDA_ERR_INVALID_ARG;
+  } else {
+    return RDA_OK;
+  }
 }
 
 
