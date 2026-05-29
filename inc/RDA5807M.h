@@ -12,6 +12,7 @@ typedef enum {
   RDA_OK = 0,
   RDA_I2C_ERROR = -1,
   RDA_ERR_INVALID_ARG = -2,
+  RDA_ERR_NOT_INITIALIZED = -3,
 } rda_status_t;
 
 //////////////////////////////////////
@@ -45,6 +46,8 @@ typedef struct {
   uint16_t current_freq;
   rda5807m_freq_band_t current_freq_band;
   chan_spacing_t current_chan_spacing;
+
+  bool initialized;
 } rda5807m_t;
 
 

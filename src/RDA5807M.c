@@ -164,11 +164,7 @@ rda_status_t rda5807m_set_volume(rda5807m_t* handle, uint8_t volume_level) {
 
 rda_status_t rda5807m_init(rda5807m_t* handle) {
   rda_status_t r = validate_handle(handle);
-  if (r != RDA_OK) {return r;}
-
-  // Set default values
-  rda5807m_set_chan_spacing(handle, CHAN_SPACING_100);
-  rda5807m_set_frequency_band(handle, rda5807m_band_76_108);
+  if (r != RDA_OK && r != RDA_ERR_NOT_INITIALIZED) {return r;}
 
 
   // Enable audio output
@@ -180,13 +176,23 @@ rda_status_t rda5807m_init(rda5807m_t* handle) {
   // Enable the IC
   reg_set_bits(&handle->reg_02H, REG_02H_ENABLE_SHIFT, REG_02H_ENABLE_MASK, 1);
 
-  return rda5807m_software_reset(handle);
+  r = rda5807m_software_reset(handle);
+  if (r != RDA_OK) {return r;}
+
+  handle->initialized = true;
+
+  // Set default values
+  rda5807m_set_chan_spacing(handle, CHAN_SPACING_100);
+  rda5807m_set_frequency_band(handle, rda5807m_band_76_108);
+
+  handle->delay_ms(30);
+  return r;
 }
 
 
 rda_status_t rda5807m_software_reset(rda5807m_t* handle) {
   rda_status_t r = validate_handle(handle);
-  if (r != RDA_OK) {return r;}
+  if (r != RDA_OK && r != RDA_ERR_NOT_INITIALIZED) {return r;}
 
   reg_set_bits(&handle->reg_02H, REG_02H_RESET_SHIFT, REG_02H_RESET_MASK, 1);
   r = reg_write_direct(handle, 0x02, handle->reg_02H);
@@ -207,6 +213,8 @@ static rda_status_t validate_handle(const rda5807m_t* handle) {
     handle->i2c_write == NULL ||
     handle->delay_ms == NULL) {
     return RDA_ERR_INVALID_ARG;
+  } else if (handle->initialized != true) {
+    return RDA_ERR_NOT_INITIALIZED;
   } else {
     return RDA_OK;
   }
