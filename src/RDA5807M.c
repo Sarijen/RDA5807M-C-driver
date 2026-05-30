@@ -154,6 +154,10 @@ rda_status_t rda5807m_set_volume(rda5807m_t* handle, uint8_t volume_level) {
   rda_status_t r = validate_handle(handle);
   if (r != RDA_OK) {return r;}
 
+  // 8th bit in register 0x05 has to be set, otherwise the audio output will be very noisy
+  // when changing the volume state. There's no information about this in the public datasheet
+  reg_set_bits(&handle->reg_05H, 7,    1,   1);
+  //                     SHIFT MASK VALUE
 
   reg_set_bits(&handle->reg_05H, REG_05H_VOLUME_SHIFT, REG_05H_VOLUME_MASK, volume_level);
   r = reg_write_direct(handle, 0x05, handle->reg_05H);
