@@ -94,7 +94,11 @@ rda_status_t rda5807m_tune_frequency(rda5807m_t* handle, uint16_t new_frequency_
   // Tune to apply the frequency
   reg_set_bits(&handle->reg_03H, REG_03H_TUNE_SHIFT, REG_03H_TUNE_MASK, 1);
   r = reg_write_direct(handle, 0x03, handle->reg_03H);
+
+
+  reg_set_bits(&handle->reg_03H, REG_03H_TUNE_SHIFT, REG_03H_TUNE_MASK, 0);
   if (r != RDA_OK) {return r;}
+
 
   handle->current_freq = new_frequency_mhz;
 
