@@ -121,7 +121,7 @@ rda_status_t rda5807m_set_frequency_band(rda5807m_t* handle, rda5807m_freq_band_
   );
 
 
-  reg_set_bits(&handle->reg_07H, REG_07H_65M_50M_MODE_SHIFT, REG_07H_65M_50M_MODE_MASK, uses_65m_50m_mode);
+  reg_set_bits(&handle->reg_07H, REG_07H_65M_50M_MODE_SHIFT, REG_07H_65M_50M_MODE_MASK, !uses_65m_50m_mode);
   r = reg_write_direct(handle, 0x07, handle->reg_07H);
   if (r != RDA_OK) {return r;}
 
