@@ -68,6 +68,18 @@ const chan_spacing_t CHAN_SPACING_25 = {
 // - FUNCTION DEFINITIONS
 //////////////////////////////////////
 
+
+rda_status_t rda5807m_enable_mono(rda5807m_t* handle, bool enabled) {
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
+  reg_set_bits(&handle->reg_02H, REG_02H_MONO_SHIFT, REG_02H_MONO_MASK, enabled);
+  r = reg_write_direct(handle, 0x02, handle->reg_02H);
+
+  return r;
+}
+
+
 // Frequency uses fixed point representation
 // For e.g. when tuning 82.1MHz, 821 has to be the argument
 rda_status_t rda5807m_tune_frequency(rda5807m_t* handle, uint16_t new_frequency_mhz) {
