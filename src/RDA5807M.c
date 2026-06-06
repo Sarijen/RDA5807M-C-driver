@@ -2,7 +2,11 @@
 
 static rda_status_t validate_handle(const rda5807m_t* handle);
 static void reg_set_bits(uint16_t* reg, uint16_t bit_shift, uint16_t bit_mask, uint16_t bits);
+static void reg_get_bits(uint16_t reg, uint16_t bit_shift, uint16_t bit_mask, uint16_t* buf);
+
 static rda_status_t reg_write_direct(rda5807m_t* handle, uint8_t reg_addr, uint16_t reg_data);
+static rda_status_t reg_read_direct(rda5807m_t* handle, uint8_t reg_addr, uint16_t* buff);
+
 
 //////////////////////////////////////
 // - FREQUENCY BANDS
@@ -67,6 +71,21 @@ const chan_spacing_t CHAN_SPACING_25 = {
 //////////////////////////////////////
 // - FUNCTION DEFINITIONS
 //////////////////////////////////////
+
+rda_status_t rda5807m_is_station(rda5807m_t* handle, bool* is_station) {
+  if (is_station == NULL) {return RDA_ERR_INVALID_ARG;}
+  rda_status_t r = validate_handle(handle);
+
+  uint16_t temp_reg;
+  uint16_t station_bit;
+
+  reg_read_direct(handle, 0x0B, &temp_reg);
+  reg_get_bits(temp_reg, REG_0BH_IS_STATION_SHIFT, REG_0BH_IS_STATION_MASK, &station_bit);
+
+  *is_station = station_bit;
+
+  return r;
+}
 
 
 rda_status_t rda5807m_enable_mono(rda5807m_t* handle, bool enabled) {
@@ -231,6 +250,7 @@ rda_status_t rda5807m_software_reset(rda5807m_t* handle) {
 static rda_status_t validate_handle(const rda5807m_t* handle) {
   if (handle == NULL ||
     handle->i2c_write == NULL ||
+    handle->i2c_read == NULL ||
     handle->delay_ms == NULL) {
     return RDA_ERR_INVALID_ARG;
   } else if (handle->initialized != true) {
@@ -241,12 +261,44 @@ static rda_status_t validate_handle(const rda5807m_t* handle) {
 }
 
 
+static void reg_get_bits(uint16_t reg, uint16_t bit_shift, uint16_t bit_mask, uint16_t* buf) {
+  uint16_t new_bits;
+
+  new_bits = reg >> bit_shift; // Discard bits from right
+  new_bits &= bit_mask; // Discard bits from left
+
+  // Only bits left are those we want, so we're done
+  *buf = new_bits;
+}
+
+
 static void reg_set_bits(uint16_t* reg, uint16_t bit_shift, uint16_t bit_mask, uint16_t bits) {
   bits &= bit_mask; // Clamp
 
   *reg &= ~(bit_mask << bit_shift); // Clear
 
   *reg |= (bits << bit_shift); // Write
+}
+
+
+static rda_status_t reg_read_direct(rda5807m_t* handle, uint8_t reg_addr, uint16_t* buff) {
+  if (buff == NULL) {return RDA_ERR_INVALID_ARG;}
+
+  rda_status_t r;
+  uint8_t temp_buff[sizeof(uint16_t)];
+
+  for (uint8_t attempt = 0; attempt < 3; attempt++) {
+    r = handle->i2c_read(RDA5807M_I2C_ADDR, reg_addr, temp_buff, sizeof(temp_buff));
+
+    if (r == RDA_OK) {
+      *buff = ((uint16_t)temp_buff[0] << 8) | (temp_buff[1]);
+      return r;
+    }
+
+    handle->delay_ms(1 + attempt);
+  }
+
+  return r;
 }
 
 
