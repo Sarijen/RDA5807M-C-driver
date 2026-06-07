@@ -75,11 +75,14 @@ const chan_spacing_t CHAN_SPACING_25 = {
 rda_status_t rda5807m_is_station(rda5807m_t* handle, bool* is_station) {
   if (is_station == NULL) {return RDA_ERR_INVALID_ARG;}
   rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
 
   uint16_t temp_reg;
   uint16_t station_bit;
 
-  reg_read_direct(handle, 0x0B, &temp_reg);
+  r = reg_read_direct(handle, 0x0B, &temp_reg);
+  if (r != RDA_OK) {return r;}
+
   reg_get_bits(temp_reg, REG_0BH_IS_STATION_SHIFT, REG_0BH_IS_STATION_MASK, &station_bit);
 
   *is_station = station_bit;
