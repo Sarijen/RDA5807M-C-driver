@@ -66,6 +66,7 @@ rda_status_t rda5807m_set_volume(rda5807m_t* handle, uint8_t volume_level);
 rda_status_t rda5807m_enable_mono(rda5807m_t* handle, bool enabled);
 
 rda_status_t rda5807m_is_station(rda5807m_t* handle, bool* is_station);
+rda_status_t rda5807m_get_rssi(rda5807m_t* handle, uint8_t* rssi_value);
 
 
 //////////////////////////////////////
@@ -214,7 +215,7 @@ extern const chan_spacing_t CHAN_SPACING_25;
 #define REG_0BH_ABCD_E_MASK  0x01
 #define REG_0BH_FM_READY_MASK  0x01
 #define REG_0BH_IS_STATION_MASK  0x01
-#define REG_0BH_RSSI_MASK  0x77
+#define REG_0BH_RSSI_MASK  0x3F
 
 
 #endif

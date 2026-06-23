@@ -72,6 +72,24 @@ const chan_spacing_t CHAN_SPACING_25 = {
 // - FUNCTION DEFINITIONS
 //////////////////////////////////////
 
+rda_status_t rda5807m_get_rssi(rda5807m_t* handle, uint8_t* rssi_value) {
+  if (rssi_value == NULL) {return RDA_ERR_INVALID_ARG;}
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
+  uint16_t temp_reg;
+  uint16_t rssi_bits;
+
+  r = reg_read_direct(handle, 0x0B, &temp_reg);
+  if (r != RDA_OK) {return r;}
+
+  reg_get_bits(temp_reg, REG_0BH_RSSI_SHIFT, REG_0BH_RSSI_MASK, &rssi_bits);
+
+  *rssi_value = (uint8_t)rssi_bits;
+
+  return r;
+}
+
 rda_status_t rda5807m_is_station(rda5807m_t* handle, bool* is_station) {
   if (is_station == NULL) {return RDA_ERR_INVALID_ARG;}
   rda_status_t r = validate_handle(handle);
