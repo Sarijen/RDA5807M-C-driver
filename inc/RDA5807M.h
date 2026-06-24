@@ -64,6 +64,7 @@ rda_status_t rda5807m_set_chan_spacing(rda5807m_t* handle, chan_spacing_t new_ch
 rda_status_t rda5807m_tune_frequency(rda5807m_t* handle, uint16_t new_frequency_mhz);
 rda_status_t rda5807m_set_volume(rda5807m_t* handle, uint8_t volume_level);
 rda_status_t rda5807m_enable_mono(rda5807m_t* handle, bool enabled);
+rda_status_t rda5807m_enable_softmute(rda5807m_t* handle, bool enabled);
 
 rda_status_t rda5807m_is_station(rda5807m_t* handle, bool* is_station);
 rda_status_t rda5807m_get_rssi(rda5807m_t* handle, uint8_t* rssi_value);

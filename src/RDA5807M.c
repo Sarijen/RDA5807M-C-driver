@@ -109,6 +109,17 @@ rda_status_t rda5807m_is_station(rda5807m_t* handle, bool* is_station) {
 }
 
 
+rda_status_t rda5807m_enable_softmute(rda5807m_t* handle, bool enabled) {
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
+  reg_set_bits(&handle->reg_04H, REG_04H_SOFTMUTE_SHIFT, REG_04H_SOFTMUTE_MASK, enabled);
+  r = reg_write_direct(handle, 0x04, handle->reg_04H);
+
+  return r;
+}
+
+
 rda_status_t rda5807m_enable_mono(rda5807m_t* handle, bool enabled) {
   rda_status_t r = validate_handle(handle);
   if (r != RDA_OK) {return r;}
