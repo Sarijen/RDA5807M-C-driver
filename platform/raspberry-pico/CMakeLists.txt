@@ -23,4 +23,7 @@ target_link_libraries(
   RDA5807M
 )
 
+pico_enable_stdio_uart(Pico_RDA5807M 0)
+pico_enable_stdio_usb(Pico_RDA5807M 1)
+
 pico_add_extra_outputs(Pico_RDA5807M)
