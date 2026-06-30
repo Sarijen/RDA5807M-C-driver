@@ -72,6 +72,51 @@ const chan_spacing_t CHAN_SPACING_25 = {
 // - FUNCTION DEFINITIONS
 //////////////////////////////////////
 
+
+rda_status_t rda5807m_get_raw_rds(rda5807m_t* handle, rds_group_t* new_group) {
+  if (new_group == NULL) {return RDA_ERR_INVALID_ARG;}
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
+
+  r = reg_read_direct(handle, 0x0C, &new_group->block_a);
+  if (r != RDA_OK) {return r;}
+
+  r = reg_read_direct(handle, 0x0D, &new_group->block_b);
+  if (r != RDA_OK) {return r;}
+
+  r = reg_read_direct(handle, 0x0E, &new_group->block_c);
+  if (r != RDA_OK) {return r;}
+
+  r = reg_read_direct(handle, 0x0F, &new_group->block_d);
+  if (r != RDA_OK) {return r;}
+  
+  new_group->type = rds_get_group_type(new_group);
+  new_group->variant = rds_get_group_variant(new_group);
+
+  return r;
+}
+
+
+rda_status_t rda5807m_is_rds_ready(rda5807m_t* handle, bool* is_ready) {
+  if (is_ready == NULL) {return RDA_ERR_INVALID_ARG;}
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
+  uint16_t temp_reg;
+  uint16_t rds_ready_bit;
+
+  r = reg_read_direct(handle, 0x0A, &temp_reg);
+  if (r != RDA_OK) {return r;}
+
+  reg_get_bits(temp_reg, REG_0AH_RDS_READY_SHIFT, REG_0AH_RDS_READY_MASK, &rds_ready_bit);
+
+  *is_ready = rds_ready_bit;
+
+  return r;
+}
+
+
 rda_status_t rda5807m_get_rssi(rda5807m_t* handle, uint8_t* rssi_value) {
   if (rssi_value == NULL) {return RDA_ERR_INVALID_ARG;}
   rda_status_t r = validate_handle(handle);
@@ -104,6 +149,21 @@ rda_status_t rda5807m_is_station(rda5807m_t* handle, bool* is_station) {
   reg_get_bits(temp_reg, REG_0BH_IS_STATION_SHIFT, REG_0BH_IS_STATION_MASK, &station_bit);
 
   *is_station = station_bit;
+
+  return r;
+}
+
+
+rda_status_t rda5807m_enable_rds(rda5807m_t* handle, bool enabled) {
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
+  reg_set_bits(&handle->reg_02H, REG_02H_RDS_EN_SHIFT, REG_02H_RDS_EN_MASK, enabled);
+  r = reg_write_direct(handle, 0x02, handle->reg_02H);
+
+  if (r == RDA_OK) {
+    handle->rds_enabled = true;
+  }
 
   return r;
 }

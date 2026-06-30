@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "rds.h"
 
 #define RDA5807M_I2C_ADDR 0x11
 
@@ -43,12 +44,14 @@ typedef struct {
   uint16_t reg_05H;
 //         reg 06H is not used
   uint16_t reg_07H;
+// registers 0x0A and above are read-only
 
   uint16_t current_freq;
   rda5807m_freq_band_t current_freq_band;
   chan_spacing_t current_chan_spacing;
 
   bool initialized;
+  bool rds_enabled;
 } rda5807m_t;
 
 
@@ -66,10 +69,12 @@ rda_status_t rda5807m_set_volume(rda5807m_t* handle, uint8_t volume_level);
 rda_status_t rda5807m_enable_mono(rda5807m_t* handle, bool enabled);
 rda_status_t rda5807m_enable_softmute(rda5807m_t* handle, bool enabled);
 rda_status_t rda5807m_mute_audio(rda5807m_t* handle, bool enabled);
+rda_status_t rda5807m_enable_rds(rda5807m_t* handle, bool enabled);
 
 rda_status_t rda5807m_is_station(rda5807m_t* handle, bool* is_station);
 rda_status_t rda5807m_get_rssi(rda5807m_t* handle, uint8_t* rssi_value);
-
+rda_status_t rda5807m_is_rds_ready(rda5807m_t* handle, bool* is_ready);
+rda_status_t rda5807m_get_raw_rds(rda5807m_t* handle, rds_group_t* new_group);
 
 //////////////////////////////////////
 // - FREQUENCY BANDS
