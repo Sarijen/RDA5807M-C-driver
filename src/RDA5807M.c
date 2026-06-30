@@ -162,7 +162,7 @@ rda_status_t rda5807m_enable_rds(rda5807m_t* handle, bool enabled) {
   r = reg_write_direct(handle, 0x02, handle->reg_02H);
 
   if (r == RDA_OK) {
-    handle->rds_enabled = true;
+    handle->rds_enabled = enabled;
   }
 
   return r;
