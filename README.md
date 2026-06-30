@@ -31,6 +31,7 @@ This example shows tuning 88.0 MHz on the STM32F103
 #include "RDA5807M.h"
 
 rda_status_t my_i2c1_write(uint8_t i2c_addr, uint8_t* data, uint8_t length);
+rda_status_t rda5807m_i2c_read(uint8_t i2c_addr, uint8_t reg_addr, uint8_t* buff, uint8_t length);
 void my_delay_ms(uint8_t ms);
 
 // Frequencies use fixed point representation ( FREQ_FLOAT*10 )
@@ -45,6 +46,7 @@ int main(void) {
 
   static rda5807m_t handle;
   handle.i2c_write = my_i2c1_write;
+  handle.i2c_read = my_i2c1_read;
   handle.delay_ms = my_delay_ms;
 
   rda5807m_init(&handle);
@@ -56,11 +58,30 @@ int main(void) {
 
 rda_status_t my_i2c1_write(uint8_t i2c_addr, uint8_t* data, uint8_t length) {
   HAL_StatusTypeDef result = HAL_I2C_Master_Transmit(
-      &hi2c1,
-      (i2c_addr << 1),
-      data,
-      length,
-      HAL_MAX_DELAY
+    &hi2c1,
+    (i2c_addr << 1),
+    data,
+    length,
+    HAL_MAX_DELAY
+  );
+
+  if (result == HAL_OK) {
+    return RDA_OK;
+  } else {
+    return RDA_I2C_ERROR;
+  }
+}
+
+
+rda_status_t my_i2c_read(uint8_t i2c_addr, uint8_t reg_addr, uint8_t* buff, uint8_t length) {
+  HAL_StatusTypeDef result = HAL_I2C_Mem_Read(
+    &hi2c1,
+    (i2c_addr << 1),
+    reg_addr,
+    1,
+    buff,
+    length,
+    HAL_MAX_DELAY
   );
 
   if (result == HAL_OK) {
