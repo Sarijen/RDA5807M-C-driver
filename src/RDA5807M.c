@@ -169,11 +169,35 @@ rda_status_t rda5807m_enable_rds(rda5807m_t* handle, bool enabled) {
 }
 
 
+rda_status_t rda5807m_seek(rda5807m_t* handle, bool direction, bool band_wrap, uint8_t snr_threshold) {
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
+
+  reg_set_bits(&handle->reg_05H, REG_05H_SNR_THRESHOLD_SHIFT, REG_05H_SNR_THRESHOLD_MASK, snr_threshold);
+  r = reg_write_direct(handle, 0x05, handle->reg_05H);
+  if (r != RDA_OK) {return r;}
+
+
+  reg_set_bits(&handle->reg_02H, REG_02H_SEEK_EN_SHIFT, REG_02H_SEEK_EN_MASK, 1);
+  reg_set_bits(&handle->reg_02H, REG_02H_SEEK_DIR_SHIFT, REG_02H_SEEK_DIR_MASK, direction);
+  reg_set_bits(&handle->reg_02H, REG_02H_SEEK_MODE_SHIFT, REG_02H_SEEK_MODE_MASK, band_wrap);
+
+  r = reg_write_direct(handle, 0x02, handle->reg_02H);
+
+  // Prevent unwanted seeking when using this register later
+  reg_set_bits(&handle->reg_02H, REG_02H_SEEK_EN_SHIFT, REG_02H_SEEK_EN_MASK, 0);
+
+  return r;
+}
+
+
 rda_status_t rda5807m_mute_audio(rda5807m_t* handle, bool enabled) {
   rda_status_t r = validate_handle(handle);
   if (r != RDA_OK) {return r;}
 
-  reg_set_bits(&handle->reg_02H, REG_02H_MUTE_SHIFT, REG_02H_MUTE_MASK, enabled);
+  //                                                                    0 = muted
+  reg_set_bits(&handle->reg_02H, REG_02H_MUTE_SHIFT, REG_02H_MUTE_MASK, !enabled);
   r = reg_write_direct(handle, 0x02, handle->reg_02H);
 
   return r;
