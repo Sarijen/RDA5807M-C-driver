@@ -117,6 +117,27 @@ rda_status_t rda5807m_is_rds_ready(rda5807m_t* handle, bool* is_ready) {
 }
 
 
+rda_status_t rda5807m_get_frequency(rda5807m_t* handle, uint16_t* tuned_frequency_mhz) {
+  if (tuned_frequency_mhz == NULL) {return RDA_ERR_INVALID_ARG;}
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
+  uint16_t temp_reg;
+  uint16_t channel;
+  uint16_t freq_band_start = handle->current_freq_band.freq_start;
+  uint16_t chan_spacing_khz = handle->current_chan_spacing.value_khz;
+
+  r = reg_read_direct(handle, 0x0A, &temp_reg);
+  if (r != RDA_OK) {return r;}
+
+  reg_get_bits(temp_reg, REG_0AH_CHAN_READ_SHIFT, REG_0AH_CHAN_READ_MASK, &channel);
+
+  *tuned_frequency_mhz = freq_band_start + (chan_spacing_khz * channel / 100);
+
+  return r;
+}
+
+
 rda_status_t rda5807m_get_rssi(rda5807m_t* handle, uint8_t* rssi_value) {
   if (rssi_value == NULL) {return RDA_ERR_INVALID_ARG;}
   rda_status_t r = validate_handle(handle);
