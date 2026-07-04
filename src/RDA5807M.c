@@ -12,6 +12,9 @@ static rda_status_t reg_read_direct(rda5807m_t* handle, uint8_t reg_addr, uint16
 // - FREQUENCY BANDS
 //////////////////////////////////////
 
+// Frequency uses fixed point representation
+// For e.g. 82.1MHz, the value will be 821
+
 const rda5807m_freq_band_t rda5807m_band_50_65 = {
   .reg_bits = 0x03,
   .freq_start = 500,
@@ -338,9 +341,10 @@ rda_status_t rda5807m_set_volume(rda5807m_t* handle, uint8_t volume_level) {
   if (r != RDA_OK) {return r;}
 
   // 8th bit in register 0x05 has to be set, otherwise the audio output will be very noisy
-  // when changing the volume state. There's no information about this in the public datasheet
+  // There's no information about this in the public datasheet
   reg_set_bits(&handle->reg_05H, 7,    1,   1);
-  //                     SHIFT MASK VALUE
+  //                             |     |    |
+  //                          SHIFT  MASK  VALUE
 
   reg_set_bits(&handle->reg_05H, REG_05H_VOLUME_SHIFT, REG_05H_VOLUME_MASK, volume_level);
   r = reg_write_direct(handle, 0x05, handle->reg_05H);
@@ -439,6 +443,7 @@ static rda_status_t reg_read_direct(rda5807m_t* handle, uint8_t reg_addr, uint16
     r = handle->i2c_read(RDA5807M_I2C_ADDR, reg_addr, temp_buff, sizeof(temp_buff));
 
     if (r == RDA_OK) {
+      //                 High byte             Low byte
       *buff = ((uint16_t)temp_buff[0] << 8) | (temp_buff[1]);
       return r;
     }

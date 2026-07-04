@@ -8,8 +8,8 @@ https://www.rdsforum.org/2010/RDS-Specification.htm
 
 */
 
-#ifndef RDS
-#define RDS
+#ifndef RDS_H
+#define RDS_H
 
 #include <stdint.h>
 #include <stdbool.h>

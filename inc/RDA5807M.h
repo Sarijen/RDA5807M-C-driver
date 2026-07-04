@@ -1,5 +1,5 @@
-#ifndef RDA5807M
-#define RDA5807M
+#ifndef RDA5807M_H
+#define RDA5807M_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -74,8 +74,10 @@ rda_status_t rda5807m_enable_rds(rda5807m_t* handle, bool enabled);
 
 rda_status_t rda5807m_is_station(rda5807m_t* handle, bool* is_station);
 rda_status_t rda5807m_get_rssi(rda5807m_t* handle, uint8_t* rssi_value);
-rda_status_t rda5807m_is_rds_ready(rda5807m_t* handle, bool* is_ready);
 rda_status_t rda5807m_get_frequency(rda5807m_t* handle, uint16_t* tuned_frequency_mhz);
+
+// RDS
+rda_status_t rda5807m_is_rds_ready(rda5807m_t* handle, bool* is_ready);
 rda_status_t rda5807m_get_raw_rds(rda5807m_t* handle, rds_group_t* new_group);
 
 //////////////////////////////////////
