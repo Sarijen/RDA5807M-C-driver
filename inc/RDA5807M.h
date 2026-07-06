@@ -34,9 +34,9 @@ typedef struct {
 
 
 typedef struct {
-  rda_status_t (*i2c_write)(uint8_t, uint8_t*, uint8_t); 
-  rda_status_t (*i2c_read)(uint8_t, uint8_t, uint8_t*, uint8_t);
-  void (*delay_ms)(uint8_t);
+  rda_status_t (*i2c_write)(uint8_t i2c_addr, uint8_t* data, uint8_t length); 
+  rda_status_t (*i2c_read)(uint8_t i2c_addr, uint8_t reg_addr, uint8_t* buff, uint8_t length);
+  void (*delay_ms)(uint8_t ms);
 
   uint16_t reg_02H;
   uint16_t reg_03H;
@@ -72,13 +72,13 @@ rda_status_t rda5807m_mute_audio(rda5807m_t* handle, bool enabled);
 rda_status_t rda5807m_seek(rda5807m_t* handle, bool direction, bool band_wrap, uint8_t snr_threshold);
 rda_status_t rda5807m_enable_rds(rda5807m_t* handle, bool enabled);
 
-rda_status_t rda5807m_is_station(rda5807m_t* handle, bool* is_station);
-rda_status_t rda5807m_get_rssi(rda5807m_t* handle, uint8_t* rssi_value);
-rda_status_t rda5807m_get_frequency(rda5807m_t* handle, uint16_t* tuned_frequency_mhz);
+rda_status_t rda5807m_is_station(const rda5807m_t* handle, bool* is_station);
+rda_status_t rda5807m_get_rssi(const rda5807m_t* handle, uint8_t* rssi_value);
+rda_status_t rda5807m_get_frequency(const rda5807m_t* handle, uint16_t* tuned_frequency_mhz);
 
 // RDS
-rda_status_t rda5807m_is_rds_ready(rda5807m_t* handle, bool* is_ready);
-rda_status_t rda5807m_get_raw_rds(rda5807m_t* handle, rds_group_t* new_group);
+rda_status_t rda5807m_is_rds_ready(const rda5807m_t* handle, bool* is_ready);
+rda_status_t rda5807m_get_raw_rds(const rda5807m_t* handle, rds_group_t* new_group);
 
 //////////////////////////////////////
 // - FREQUENCY BANDS

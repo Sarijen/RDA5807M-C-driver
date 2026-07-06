@@ -4,8 +4,8 @@ static rda_status_t validate_handle(const rda5807m_t* handle);
 static void reg_set_bits(uint16_t* reg, uint16_t bit_shift, uint16_t bit_mask, uint16_t bits);
 static void reg_get_bits(uint16_t reg, uint16_t bit_shift, uint16_t bit_mask, uint16_t* buf);
 
-static rda_status_t reg_write_direct(rda5807m_t* handle, uint8_t reg_addr, uint16_t reg_data);
-static rda_status_t reg_read_direct(rda5807m_t* handle, uint8_t reg_addr, uint16_t* buff);
+static rda_status_t reg_write_direct(const rda5807m_t* handle, uint8_t reg_addr, uint16_t reg_data);
+static rda_status_t reg_read_direct(const rda5807m_t* handle, uint8_t reg_addr, uint16_t* buff);
 
 
 //////////////////////////////////////
@@ -76,7 +76,7 @@ const chan_spacing_t CHAN_SPACING_25 = {
 //////////////////////////////////////
 
 
-rda_status_t rda5807m_get_raw_rds(rda5807m_t* handle, rds_group_t* new_group) {
+rda_status_t rda5807m_get_raw_rds(const rda5807m_t* handle, rds_group_t* new_group) {
   if (new_group == NULL) {return RDA_ERR_INVALID_ARG;}
   rda_status_t r = validate_handle(handle);
   if (r != RDA_OK) {return r;}
@@ -101,7 +101,7 @@ rda_status_t rda5807m_get_raw_rds(rda5807m_t* handle, rds_group_t* new_group) {
 }
 
 
-rda_status_t rda5807m_is_rds_ready(rda5807m_t* handle, bool* is_ready) {
+rda_status_t rda5807m_is_rds_ready(const rda5807m_t* handle, bool* is_ready) {
   if (is_ready == NULL) {return RDA_ERR_INVALID_ARG;}
   rda_status_t r = validate_handle(handle);
   if (r != RDA_OK) {return r;}
@@ -120,7 +120,7 @@ rda_status_t rda5807m_is_rds_ready(rda5807m_t* handle, bool* is_ready) {
 }
 
 
-rda_status_t rda5807m_get_frequency(rda5807m_t* handle, uint16_t* tuned_frequency_mhz) {
+rda_status_t rda5807m_get_frequency(const rda5807m_t* handle, uint16_t* tuned_frequency_mhz) {
   if (tuned_frequency_mhz == NULL) {return RDA_ERR_INVALID_ARG;}
   rda_status_t r = validate_handle(handle);
   if (r != RDA_OK) {return r;}
@@ -141,7 +141,7 @@ rda_status_t rda5807m_get_frequency(rda5807m_t* handle, uint16_t* tuned_frequenc
 }
 
 
-rda_status_t rda5807m_get_rssi(rda5807m_t* handle, uint8_t* rssi_value) {
+rda_status_t rda5807m_get_rssi(const rda5807m_t* handle, uint8_t* rssi_value) {
   if (rssi_value == NULL) {return RDA_ERR_INVALID_ARG;}
   rda_status_t r = validate_handle(handle);
   if (r != RDA_OK) {return r;}
@@ -159,7 +159,7 @@ rda_status_t rda5807m_get_rssi(rda5807m_t* handle, uint8_t* rssi_value) {
   return r;
 }
 
-rda_status_t rda5807m_is_station(rda5807m_t* handle, bool* is_station) {
+rda_status_t rda5807m_is_station(const rda5807m_t* handle, bool* is_station) {
   if (is_station == NULL) {return RDA_ERR_INVALID_ARG;}
   rda_status_t r = validate_handle(handle);
   if (r != RDA_OK) {return r;}
@@ -433,7 +433,7 @@ static void reg_set_bits(uint16_t* reg, uint16_t bit_shift, uint16_t bit_mask, u
 }
 
 
-static rda_status_t reg_read_direct(rda5807m_t* handle, uint8_t reg_addr, uint16_t* buff) {
+static rda_status_t reg_read_direct(const rda5807m_t* handle, uint8_t reg_addr, uint16_t* buff) {
   if (buff == NULL) {return RDA_ERR_INVALID_ARG;}
 
   rda_status_t r;
@@ -455,7 +455,7 @@ static rda_status_t reg_read_direct(rda5807m_t* handle, uint8_t reg_addr, uint16
 }
 
 
-static rda_status_t reg_write_direct(rda5807m_t* handle, uint8_t reg_addr, uint16_t reg_data) {
+static rda_status_t reg_write_direct(const rda5807m_t* handle, uint8_t reg_addr, uint16_t reg_data) {
   uint8_t temp_buf[3] = {
     reg_addr,
     (uint8_t)(reg_data >> 8),   // High byte
