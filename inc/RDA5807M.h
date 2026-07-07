@@ -73,6 +73,7 @@ rda_status_t rda5807m_seek(rda5807m_t* handle, bool direction, bool band_wrap, u
 rda_status_t rda5807m_enable_rds(rda5807m_t* handle, bool enabled);
 
 rda_status_t rda5807m_is_station(const rda5807m_t* handle, bool* is_station);
+rda_status_t rda5807m_is_station_stereo(const rda5807m_t* handle, bool* is_stereo);
 rda_status_t rda5807m_get_rssi(const rda5807m_t* handle, uint8_t* rssi_value);
 rda_status_t rda5807m_get_frequency(const rda5807m_t* handle, uint16_t* tuned_frequency_mhz);
 

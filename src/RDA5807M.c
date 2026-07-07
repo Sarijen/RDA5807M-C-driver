@@ -159,6 +159,26 @@ rda_status_t rda5807m_get_rssi(const rda5807m_t* handle, uint8_t* rssi_value) {
   return r;
 }
 
+
+rda_status_t rda5807m_is_station_stereo(const rda5807m_t* handle, bool* is_stereo) {
+  if (is_stereo == NULL) {return RDA_ERR_INVALID_ARG;}
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
+  uint16_t temp_reg;
+  uint16_t stereo_bit;
+
+  r = reg_read_direct(handle, 0x0A, &temp_reg);
+  if (r != RDA_OK) {return r;}
+
+  reg_get_bits(temp_reg, REG_0AH_STEREO_SHIFT, REG_0AH_STEREO_MASK, &stereo_bit);
+
+  *is_stereo = stereo_bit;
+
+  return r;
+}
+
+
 rda_status_t rda5807m_is_station(const rda5807m_t* handle, bool* is_station) {
   if (is_station == NULL) {return RDA_ERR_INVALID_ARG;}
   rda_status_t r = validate_handle(handle);
