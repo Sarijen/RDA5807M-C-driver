@@ -9,21 +9,49 @@ pico_sdk_init()
 
 add_subdirectory(../../ rda5807m)
 
-add_executable(Pico_RDA5807M
-  src/main.c
+
+file(GLOB EXAMPLE_SOURCES CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/examples/*.c"
 )
 
-target_link_libraries(
-  Pico_RDA5807M
-  PRIVATE
+foreach(src ${EXAMPLE_SOURCES})
+  get_filename_component(example_name "${src}" NAME_WE)
 
-  pico_stdlib
-  hardware_i2c
+  add_executable(${example_name} "${src}")
 
-  RDA5807M
+  set_target_properties(${example_name} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/examples/${example_name}
+  )
+
+  target_link_libraries(
+    ${example_name} 
+    PRIVATE
+
+    pico_stdlib
+    hardware_i2c
+
+    RDA5807M
+  )
+
+  pico_enable_stdio_uart(${example_name} 0)
+  pico_enable_stdio_usb(${example_name} 1)
+
+  pico_add_extra_outputs(${example_name})
+endforeach()
+
+
+add_executable(hello examples/base.c)
+  target_link_libraries(
+    hello
+    PRIVATE
+
+    pico_stdlib
+    hardware_i2c
+
+    RDA5807M
+  )
+set_target_properties(hello PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${example}"
 )
-
-pico_enable_stdio_uart(Pico_RDA5807M 0)
-pico_enable_stdio_usb(Pico_RDA5807M 1)
-
-pico_add_extra_outputs(Pico_RDA5807M)
+get_target_property(dir hello RUNTIME_OUTPUT_DIRECTORY)
+message(STATUS "hello output = ${dir}")

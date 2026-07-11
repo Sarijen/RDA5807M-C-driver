@@ -33,8 +33,6 @@ int main() {
 }
 
 
-
-
 void my_i2c0_init() {
   i2c_init(i2c0, I2C0_FREQUENCY_KHZ*1000); 
   gpio_set_function(I2C0_SDA_PIN, GPIO_FUNC_I2C);
@@ -55,6 +53,7 @@ rda_status_t rda5807m_i2c_write(uint8_t i2c_addr, uint8_t* data, uint8_t length)
   }
 }
 
+
 rda_status_t rda5807m_i2c_read(uint8_t i2c_addr, uint8_t reg_addr, uint8_t* buff, uint8_t length) {
   i2c_write_blocking(i2c0, i2c_addr, &reg_addr, length, true);
   int result = i2c_read_blocking(i2c0, i2c_addr, buff, length, false);
@@ -67,6 +66,7 @@ rda_status_t rda5807m_i2c_read(uint8_t i2c_addr, uint8_t reg_addr, uint8_t* buff
     return RDA_I2C_ERROR;
   }
 }
+
 
 void global_delay_ms(uint8_t ms) {
   sleep_ms(ms);
