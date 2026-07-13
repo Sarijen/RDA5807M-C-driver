@@ -20,7 +20,7 @@ foreach(src ${EXAMPLE_SOURCES})
   add_executable(${example_name} "${src}")
 
   set_target_properties(${example_name} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/examples/${example_name}
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${example_name}
   )
 
   target_link_libraries(
@@ -38,20 +38,3 @@ foreach(src ${EXAMPLE_SOURCES})
 
   pico_add_extra_outputs(${example_name})
 endforeach()
-
-
-add_executable(hello examples/base.c)
-  target_link_libraries(
-    hello
-    PRIVATE
-
-    pico_stdlib
-    hardware_i2c
-
-    RDA5807M
-  )
-set_target_properties(hello PROPERTIES
-  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${example}"
-)
-get_target_property(dir hello RUNTIME_OUTPUT_DIRECTORY)
-message(STATUS "hello output = ${dir}")
