@@ -70,6 +70,7 @@ rda_status_t rda5807m_enable_mono(rda5807m_t* handle, bool enabled);
 rda_status_t rda5807m_enable_softmute(rda5807m_t* handle, bool enabled);
 rda_status_t rda5807m_mute_audio(rda5807m_t* handle, bool enabled);
 rda_status_t rda5807m_seek(rda5807m_t* handle, bool direction, bool band_wrap, uint8_t snr_threshold);
+rda_status_t rda5807m_enable_softblend(rda5807m_t* handle, bool enabled);
 rda_status_t rda5807m_enable_rds(rda5807m_t* handle, bool enabled);
 
 rda_status_t rda5807m_is_station(const rda5807m_t* handle, bool* is_station);

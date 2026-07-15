@@ -213,6 +213,17 @@ rda_status_t rda5807m_enable_rds(rda5807m_t* handle, bool enabled) {
 }
 
 
+rda_status_t rda5807m_enable_softblend(rda5807m_t* handle, bool enabled) {
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
+  reg_set_bits(&handle->reg_07H, REG_07H_SOFTBLEND_SHIFT, REG_07H_SOFTBLEND_MASK, enabled);
+  r = reg_write_direct(handle, 0x07, handle->reg_07H);
+  
+  return r;
+}
+
+
 rda_status_t rda5807m_seek(rda5807m_t* handle, bool direction, bool band_wrap, uint8_t snr_threshold) {
   rda_status_t r = validate_handle(handle);
   if (r != RDA_OK) {return r;}
