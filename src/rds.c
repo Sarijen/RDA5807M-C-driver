@@ -42,6 +42,11 @@ void rds_get_datetime(const rds_group_t* g, rds_datetime_t* dt) {
 }
 
 
+uint8_t rds_get_pty(const rds_group_t* g) {
+  return (g->block_b >> 5) & 0x1F;
+}
+
+
 uint8_t rds_get_group_type(const rds_group_t* g) {
   return (g->block_b >> 12) & 0x0F;
 }
