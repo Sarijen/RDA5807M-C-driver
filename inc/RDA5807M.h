@@ -16,6 +16,28 @@ typedef enum {
   RDA_ERR_NOT_INITIALIZED = -3,
 } rda_status_t;
 
+
+//////////////////////////////////////
+// - REGISTERS
+//////////////////////////////////////
+
+// Write
+#define RDA5807M_REG_02H 0x02
+#define RDA5807M_REG_03H 0x03
+#define RDA5807M_REG_04H 0x04
+#define RDA5807M_REG_05H 0x05
+//               REG 06H is not used
+#define RDA5807M_REG_07H 0x07
+
+// Read
+#define RDA5807M_REG_0AH 0x0A
+#define RDA5807M_REG_0BH 0x0B
+#define RDA5807M_REG_0CH 0x0C
+#define RDA5807M_REG_0DH 0x0D
+#define RDA5807M_REG_0EH 0x0E
+#define RDA5807M_REG_0FH 0x0F
+
+
 //////////////////////////////////////
 // - STRUCTS
 //////////////////////////////////////

@@ -82,16 +82,16 @@ rda_status_t rda5807m_get_raw_rds(const rda5807m_t* handle, rds_group_t* new_gro
   if (r != RDA_OK) {return r;}
 
 
-  r = reg_read_direct(handle, 0x0C, &new_group->block_a);
+  r = reg_read_direct(handle, RDA5807M_REG_0CH, &new_group->block_a);
   if (r != RDA_OK) {return r;}
 
-  r = reg_read_direct(handle, 0x0D, &new_group->block_b);
+  r = reg_read_direct(handle, RDA5807M_REG_0DH, &new_group->block_b);
   if (r != RDA_OK) {return r;}
 
-  r = reg_read_direct(handle, 0x0E, &new_group->block_c);
+  r = reg_read_direct(handle, RDA5807M_REG_0EH, &new_group->block_c);
   if (r != RDA_OK) {return r;}
 
-  r = reg_read_direct(handle, 0x0F, &new_group->block_d);
+  r = reg_read_direct(handle, RDA5807M_REG_0FH, &new_group->block_d);
   if (r != RDA_OK) {return r;}
   
   new_group->type = rds_get_group_type(new_group);
@@ -109,7 +109,7 @@ rda_status_t rda5807m_is_rds_ready(const rda5807m_t* handle, bool* is_ready) {
   uint16_t temp_reg;
   uint16_t rds_ready_bit;
 
-  r = reg_read_direct(handle, 0x0A, &temp_reg);
+  r = reg_read_direct(handle, RDA5807M_REG_0AH, &temp_reg);
   if (r != RDA_OK) {return r;}
 
   reg_get_bits(temp_reg, REG_0AH_RDS_READY_SHIFT, REG_0AH_RDS_READY_MASK, &rds_ready_bit);
@@ -130,7 +130,7 @@ rda_status_t rda5807m_get_frequency(const rda5807m_t* handle, uint16_t* tuned_fr
   uint16_t freq_band_start = handle->current_freq_band.freq_start;
   uint16_t chan_spacing_khz = handle->current_chan_spacing.value_khz;
 
-  r = reg_read_direct(handle, 0x0A, &temp_reg);
+  r = reg_read_direct(handle, RDA5807M_REG_0AH, &temp_reg);
   if (r != RDA_OK) {return r;}
 
   reg_get_bits(temp_reg, REG_0AH_CHAN_READ_SHIFT, REG_0AH_CHAN_READ_MASK, &channel);
@@ -149,7 +149,7 @@ rda_status_t rda5807m_get_rssi(const rda5807m_t* handle, uint8_t* rssi_value) {
   uint16_t temp_reg;
   uint16_t rssi_bits;
 
-  r = reg_read_direct(handle, 0x0B, &temp_reg);
+  r = reg_read_direct(handle, RDA5807M_REG_0BH, &temp_reg);
   if (r != RDA_OK) {return r;}
 
   reg_get_bits(temp_reg, REG_0BH_RSSI_SHIFT, REG_0BH_RSSI_MASK, &rssi_bits);
@@ -168,7 +168,7 @@ rda_status_t rda5807m_is_station_stereo(const rda5807m_t* handle, bool* is_stere
   uint16_t temp_reg;
   uint16_t stereo_bit;
 
-  r = reg_read_direct(handle, 0x0A, &temp_reg);
+  r = reg_read_direct(handle, RDA5807M_REG_0AH, &temp_reg);
   if (r != RDA_OK) {return r;}
 
   reg_get_bits(temp_reg, REG_0AH_STEREO_SHIFT, REG_0AH_STEREO_MASK, &stereo_bit);
@@ -187,7 +187,7 @@ rda_status_t rda5807m_is_station(const rda5807m_t* handle, bool* is_station) {
   uint16_t temp_reg;
   uint16_t station_bit;
 
-  r = reg_read_direct(handle, 0x0B, &temp_reg);
+  r = reg_read_direct(handle, RDA5807M_REG_0BH, &temp_reg);
   if (r != RDA_OK) {return r;}
 
   reg_get_bits(temp_reg, REG_0BH_IS_STATION_SHIFT, REG_0BH_IS_STATION_MASK, &station_bit);
@@ -203,7 +203,7 @@ rda_status_t rda5807m_enable_rds(rda5807m_t* handle, bool enabled) {
   if (r != RDA_OK) {return r;}
 
   reg_set_bits(&handle->reg_02H, REG_02H_RDS_EN_SHIFT, REG_02H_RDS_EN_MASK, enabled);
-  r = reg_write_direct(handle, 0x02, handle->reg_02H);
+  r = reg_write_direct(handle, RDA5807M_REG_02H, handle->reg_02H);
 
   if (r == RDA_OK) {
     handle->rds_enabled = enabled;
@@ -218,7 +218,7 @@ rda_status_t rda5807m_enable_softblend(rda5807m_t* handle, bool enabled) {
   if (r != RDA_OK) {return r;}
 
   reg_set_bits(&handle->reg_07H, REG_07H_SOFTBLEND_SHIFT, REG_07H_SOFTBLEND_MASK, enabled);
-  r = reg_write_direct(handle, 0x07, handle->reg_07H);
+  r = reg_write_direct(handle, RDA5807M_REG_07H, handle->reg_07H);
   
   return r;
 }
@@ -230,7 +230,7 @@ rda_status_t rda5807m_seek(rda5807m_t* handle, bool direction, bool band_wrap, u
 
 
   reg_set_bits(&handle->reg_05H, REG_05H_SNR_THRESHOLD_SHIFT, REG_05H_SNR_THRESHOLD_MASK, snr_threshold);
-  r = reg_write_direct(handle, 0x05, handle->reg_05H);
+  r = reg_write_direct(handle, RDA5807M_REG_05H, handle->reg_05H);
   if (r != RDA_OK) {return r;}
 
 
@@ -238,7 +238,7 @@ rda_status_t rda5807m_seek(rda5807m_t* handle, bool direction, bool band_wrap, u
   reg_set_bits(&handle->reg_02H, REG_02H_SEEK_DIR_SHIFT, REG_02H_SEEK_DIR_MASK, direction);
   reg_set_bits(&handle->reg_02H, REG_02H_SEEK_MODE_SHIFT, REG_02H_SEEK_MODE_MASK, band_wrap);
 
-  r = reg_write_direct(handle, 0x02, handle->reg_02H);
+  r = reg_write_direct(handle, RDA5807M_REG_02H, handle->reg_02H);
 
   // Prevent unwanted seeking when using this register later
   reg_set_bits(&handle->reg_02H, REG_02H_SEEK_EN_SHIFT, REG_02H_SEEK_EN_MASK, 0);
@@ -253,7 +253,7 @@ rda_status_t rda5807m_mute_audio(rda5807m_t* handle, bool enabled) {
 
   //                                                                    0 = muted
   reg_set_bits(&handle->reg_02H, REG_02H_MUTE_SHIFT, REG_02H_MUTE_MASK, !enabled);
-  r = reg_write_direct(handle, 0x02, handle->reg_02H);
+  r = reg_write_direct(handle, RDA5807M_REG_02H, handle->reg_02H);
 
   return r;
 }
@@ -264,7 +264,7 @@ rda_status_t rda5807m_enable_softmute(rda5807m_t* handle, bool enabled) {
   if (r != RDA_OK) {return r;}
 
   reg_set_bits(&handle->reg_04H, REG_04H_SOFTMUTE_SHIFT, REG_04H_SOFTMUTE_MASK, enabled);
-  r = reg_write_direct(handle, 0x04, handle->reg_04H);
+  r = reg_write_direct(handle, RDA5807M_REG_04H, handle->reg_04H);
 
   return r;
 }
@@ -275,7 +275,7 @@ rda_status_t rda5807m_enable_mono(rda5807m_t* handle, bool enabled) {
   if (r != RDA_OK) {return r;}
 
   reg_set_bits(&handle->reg_02H, REG_02H_MONO_SHIFT, REG_02H_MONO_MASK, enabled);
-  r = reg_write_direct(handle, 0x02, handle->reg_02H);
+  r = reg_write_direct(handle, RDA5807M_REG_02H, handle->reg_02H);
 
   return r;
 }
@@ -306,7 +306,7 @@ rda_status_t rda5807m_tune_frequency(rda5807m_t* handle, uint16_t new_frequency_
 
   // Tune to apply the frequency
   reg_set_bits(&handle->reg_03H, REG_03H_TUNE_SHIFT, REG_03H_TUNE_MASK, 1);
-  r = reg_write_direct(handle, 0x03, handle->reg_03H);
+  r = reg_write_direct(handle, RDA5807M_REG_03H, handle->reg_03H);
 
 
   reg_set_bits(&handle->reg_03H, REG_03H_TUNE_SHIFT, REG_03H_TUNE_MASK, 0);
@@ -325,7 +325,7 @@ rda_status_t rda5807m_set_frequency_band(rda5807m_t* handle, rda5807m_freq_band_
 
 
   reg_set_bits(&handle->reg_03H, REG_03H_BAND_SELECT_SHIFT, REG_03H_BAND_SELECT_MASK, new_freq_band.reg_bits);
-  r = reg_write_direct(handle, 0x03, handle->reg_03H);
+  r = reg_write_direct(handle, RDA5807M_REG_03H, handle->reg_03H);
   if (r != RDA_OK) {return r;}
 
   bool uses_65m_50m_mode = (
@@ -335,7 +335,7 @@ rda_status_t rda5807m_set_frequency_band(rda5807m_t* handle, rda5807m_freq_band_
 
 
   reg_set_bits(&handle->reg_07H, REG_07H_65M_50M_MODE_SHIFT, REG_07H_65M_50M_MODE_MASK, !uses_65m_50m_mode);
-  r = reg_write_direct(handle, 0x07, handle->reg_07H);
+  r = reg_write_direct(handle, RDA5807M_REG_07H, handle->reg_07H);
   if (r != RDA_OK) {return r;}
 
   handle->current_freq_band = new_freq_band;
@@ -358,7 +358,7 @@ rda_status_t rda5807m_set_chan_spacing(rda5807m_t* handle, chan_spacing_t new_ch
 
 
   reg_set_bits(&handle->reg_03H, REG_03H_CHAN_SELECT_SHIFT, REG_03H_CHAN_SELECT_MASK, new_chan_spacing.reg_bits);
-  r = reg_write_direct(handle, 0x03, handle->reg_03H);
+  r = reg_write_direct(handle, RDA5807M_REG_03H, handle->reg_03H);
   if (r != RDA_OK) {return r;}
 
   handle->current_chan_spacing = new_chan_spacing;
@@ -378,7 +378,7 @@ rda_status_t rda5807m_set_volume(rda5807m_t* handle, uint8_t volume_level) {
   //                          SHIFT  MASK  VALUE
 
   reg_set_bits(&handle->reg_05H, REG_05H_VOLUME_SHIFT, REG_05H_VOLUME_MASK, volume_level);
-  r = reg_write_direct(handle, 0x05, handle->reg_05H);
+  r = reg_write_direct(handle, RDA5807M_REG_05H, handle->reg_05H);
 
   return r;
 }
@@ -417,13 +417,13 @@ rda_status_t rda5807m_software_reset(rda5807m_t* handle) {
   if (r != RDA_OK && r != RDA_ERR_NOT_INITIALIZED) {return r;}
 
   reg_set_bits(&handle->reg_02H, REG_02H_RESET_SHIFT, REG_02H_RESET_MASK, 1);
-  r = reg_write_direct(handle, 0x02, handle->reg_02H);
+  r = reg_write_direct(handle, RDA5807M_REG_02H, handle->reg_02H);
   if (r != RDA_OK) {return r;}
   handle->delay_ms(1);
 
 
   reg_set_bits(&handle->reg_02H, REG_02H_RESET_SHIFT, REG_02H_RESET_MASK, 0);
-  r = reg_write_direct(handle, 0x02, handle->reg_02H);
+  r = reg_write_direct(handle, RDA5807M_REG_02H, handle->reg_02H);
   handle->delay_ms(1);
 
   return r;
