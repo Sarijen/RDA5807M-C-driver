@@ -281,6 +281,23 @@ rda_status_t rda5807m_enable_mono(rda5807m_t* handle, bool enabled) {
 }
 
 
+rda_status_t rda5807m_set_volume(rda5807m_t* handle, uint8_t volume_level) {
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
+  // 8th bit in register 0x05 has to be set, otherwise the audio output will be very noisy
+  // There's no information about this in the public datasheet
+  reg_set_bits(&handle->reg_05H, 7,    1,   1);
+  //                             |     |    |
+  //                          SHIFT  MASK  VALUE
+
+  reg_set_bits(&handle->reg_05H, REG_05H_VOLUME_SHIFT, REG_05H_VOLUME_MASK, volume_level);
+  r = reg_write_direct(handle, RDA5807M_REG_05H, handle->reg_05H);
+
+  return r;
+}
+
+
 // Frequency uses fixed point representation
 // For e.g. when tuning 82.1MHz, 821 has to be the argument
 rda_status_t rda5807m_tune_frequency(rda5807m_t* handle, uint16_t new_frequency_mhz) {
@@ -314,6 +331,18 @@ rda_status_t rda5807m_tune_frequency(rda5807m_t* handle, uint16_t new_frequency_
 
 
   handle->current_freq = new_frequency_mhz;
+
+  return r;
+}
+
+
+rda_status_t rda5807m_set_deemphasis(rda5807m_t* handle, enum deemphasis de) {
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
+  reg_set_bits(&handle->reg_04H, REG_04H_DE_EMPHASIS_SHIFT, REG_04H_DE_EMPHASIS_MASK, de);
+
+  r = reg_write_direct(handle, RDA5807M_REG_04H, handle->reg_04H);
 
   return r;
 }
@@ -367,21 +396,7 @@ rda_status_t rda5807m_set_chan_spacing(rda5807m_t* handle, chan_spacing_t new_ch
 }
 
 
-rda_status_t rda5807m_set_volume(rda5807m_t* handle, uint8_t volume_level) {
-  rda_status_t r = validate_handle(handle);
-  if (r != RDA_OK) {return r;}
 
-  // 8th bit in register 0x05 has to be set, otherwise the audio output will be very noisy
-  // There's no information about this in the public datasheet
-  reg_set_bits(&handle->reg_05H, 7,    1,   1);
-  //                             |     |    |
-  //                          SHIFT  MASK  VALUE
-
-  reg_set_bits(&handle->reg_05H, REG_05H_VOLUME_SHIFT, REG_05H_VOLUME_MASK, volume_level);
-  r = reg_write_direct(handle, RDA5807M_REG_05H, handle->reg_05H);
-
-  return r;
-}
 
 
 rda_status_t rda5807m_init(rda5807m_t* handle) {
