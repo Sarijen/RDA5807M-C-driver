@@ -336,7 +336,7 @@ rda_status_t rda5807m_tune_frequency(rda5807m_t* handle, uint16_t new_frequency_
 }
 
 
-rda_status_t rda5807m_set_deemphasis(rda5807m_t* handle, enum deemphasis de) {
+rda_status_t rda5807m_set_deemphasis(rda5807m_t* handle, deemphasis de) {
   rda_status_t r = validate_handle(handle);
   if (r != RDA_OK) {return r;}
 
