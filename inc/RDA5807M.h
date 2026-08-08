@@ -81,6 +81,24 @@ typedef struct {
 } rda5807m_t;
 
 
+typedef struct {
+  rds_datetime_t dt;
+  uint32_t updated;
+
+  uint16_t pi_code;
+  uint8_t pty;
+  bool tp;
+} rds_data_t;
+
+
+typedef enum {
+  RDS_UPDATE_NONE     = 0,
+  RDS_UPDATE_PS       = 1 << 0,
+  RDS_UPDATE_RT       = 1 << 1,
+  RDS_UPDATE_DATETIME = 1 << 2,
+} rds_update_mask_t;
+
+
 //////////////////////////////////////
 // - FUNCTION DECLARATIONS
 //////////////////////////////////////
@@ -108,6 +126,7 @@ rda_status_t rda5807m_get_frequency(const rda5807m_t* handle, uint16_t* tuned_fr
 // RDS
 rda_status_t rda5807m_is_rds_ready(const rda5807m_t* handle, bool* is_ready);
 rda_status_t rda5807m_get_raw_rds(const rda5807m_t* handle, rds_group_t* new_group);
+rda_status_t rda5807m_process_rds(const rda5807m_t* handle, rds_data_t* rds);
 
 //////////////////////////////////////
 // - FREQUENCY BANDS

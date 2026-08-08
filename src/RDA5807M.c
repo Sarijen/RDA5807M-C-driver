@@ -75,6 +75,39 @@ const chan_spacing_t CHAN_SPACING_25 = {
 // - FUNCTION DEFINITIONS
 //////////////////////////////////////
 
+rda_status_t rda5807m_process_rds(const rda5807m_t* handle, rds_data_t* rds) {
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
+  rds_group_t g;
+
+  r = rda5807m_get_raw_rds(handle, &g);
+  if (r != RDA_OK) {return r;}
+
+  rds->pi_code = g.block_a;
+  rds->pty = rds_get_pty(&g);
+  rds->tp = rds_get_tp(&g);
+  rds->updated = RDS_UPDATE_NONE;
+
+
+  uint8_t type = g.type;
+  bool variant = g.variant;
+
+  if (type == 0) {
+  // TODO: PS
+
+  } else if (type == 2) {
+  // TODO: RT
+
+  } else if (type == 4 && variant == GROUP_A) {
+    rds_get_datetime(&g, &rds->dt);
+    rds->updated = RDS_UPDATE_DATETIME;
+
+  }
+
+  return r;
+}
+
 
 rda_status_t rda5807m_get_raw_rds(const rda5807m_t* handle, rds_group_t* new_group) {
   if (new_group == NULL) {return RDA_ERR_INVALID_ARG;}
