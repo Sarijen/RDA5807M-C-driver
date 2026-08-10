@@ -429,13 +429,13 @@ rda_status_t rda5807m_set_chan_spacing(rda5807m_t* handle, chan_spacing_t new_ch
 }
 
 
-
-
-
 rda_status_t rda5807m_init(rda5807m_t* handle) {
   rda_status_t r = validate_handle(handle);
   if (r != RDA_OK && r != RDA_ERR_NOT_INITIALIZED) {return r;}
 
+
+  r = rda5807m_software_reset(handle);
+  if (r != RDA_OK) {return r;}
 
   // Enable audio output
   reg_set_bits(&handle->reg_02H, REG_02H_AUDIO_OUTPUT_SHIFT, REG_02H_AUDIO_OUTPUT_MASK, 1);
@@ -446,7 +446,7 @@ rda_status_t rda5807m_init(rda5807m_t* handle) {
   // Enable the IC
   reg_set_bits(&handle->reg_02H, REG_02H_ENABLE_SHIFT, REG_02H_ENABLE_MASK, 1);
 
-  r = rda5807m_software_reset(handle);
+  r = reg_write_direct(handle, RDA5807M_REG_02H, handle->reg_02H);
   if (r != RDA_OK) {return r;}
 
   handle->initialized = true;
@@ -464,6 +464,7 @@ rda_status_t rda5807m_software_reset(rda5807m_t* handle) {
   rda_status_t r = validate_handle(handle);
   if (r != RDA_OK && r != RDA_ERR_NOT_INITIALIZED) {return r;}
 
+
   reg_set_bits(&handle->reg_02H, REG_02H_RESET_SHIFT, REG_02H_RESET_MASK, 1);
   r = reg_write_direct(handle, RDA5807M_REG_02H, handle->reg_02H);
   if (r != RDA_OK) {return r;}
@@ -473,6 +474,16 @@ rda_status_t rda5807m_software_reset(rda5807m_t* handle) {
   reg_set_bits(&handle->reg_02H, REG_02H_RESET_SHIFT, REG_02H_RESET_MASK, 0);
   r = reg_write_direct(handle, RDA5807M_REG_02H, handle->reg_02H);
   handle->delay_ms(1);
+  if (r != RDA_OK) {return r;}
+
+  // Reset only necessary handle variables
+  handle->reg_02H = 0;
+  handle->reg_03H = 0;
+  handle->reg_04H = 0;
+  handle->reg_05H = 0;
+  handle->reg_07H = 0;
+  handle->initialized = false;
+  handle->rds_enabled = false;
 
   return r;
 }
