@@ -246,6 +246,17 @@ rda_status_t rda5807m_enable_rds(rda5807m_t* handle, bool enabled) {
 }
 
 
+rda_status_t rda5807m_enable_bassboost(rda5807m_t* handle, bool enabled) {
+  rda_status_t r = validate_handle(handle);
+  if (r != RDA_OK) {return r;}
+
+  reg_set_bits(&handle->reg_02H, REG_02H_BASS_BOOST_SHIFT, REG_02H_BASS_BOOST_MASK, enabled);
+  r = reg_write_direct(handle, RDA5807M_REG_02H, handle->reg_02H);
+
+  return r;
+}
+
+
 rda_status_t rda5807m_enable_softblend(rda5807m_t* handle, bool enabled) {
   rda_status_t r = validate_handle(handle);
   if (r != RDA_OK) {return r;}
@@ -451,9 +462,10 @@ rda_status_t rda5807m_init(rda5807m_t* handle) {
 
   handle->initialized = true;
 
-  // Set default values
+  // Set default values (Europe)
   rda5807m_set_chan_spacing(handle, CHAN_SPACING_100);
   rda5807m_set_frequency_band(handle, rda5807m_band_76_108);
+  rda5807m_set_deemphasis(handle, de_50us);
 
   handle->delay_ms(30);
   return r;
