@@ -29,6 +29,10 @@ typedef enum {
 //               REG 06H is not used
 #define RDA5807M_REG_07H 0x07
 
+// This register is NOT described in the datasheet
+#define RDA5807M_REG_56H 0x56
+
+
 // Read
 #define RDA5807M_REG_0AH 0x0A
 #define RDA5807M_REG_0BH 0x0B
@@ -36,6 +40,10 @@ typedef enum {
 #define RDA5807M_REG_0DH 0x0D
 #define RDA5807M_REG_0EH 0x0E
 #define RDA5807M_REG_0FH 0x0F
+
+// This register is NOT described in the datasheet
+#define RDA5807M_REG_10H 0x10
+
 
 typedef enum deemphasis {
   de_75us,
@@ -126,7 +134,9 @@ rda_status_t rda5807m_get_frequency(const rda5807m_t* handle, uint16_t* tuned_fr
 
 // RDS
 rda_status_t rda5807m_is_rds_ready(const rda5807m_t* handle, bool* is_ready);
+rda_status_t rda5807m_rds_errors_found(const rda5807m_t* handle, bool* errors_found);
 rda_status_t rda5807m_get_raw_rds(const rda5807m_t* handle, rds_group_t* new_group);
+
 rda_status_t rda5807m_process_rds(const rda5807m_t* handle, rds_data_t* rds);
 
 //////////////////////////////////////
@@ -217,6 +227,10 @@ extern const chan_spacing_t CHAN_SPACING_25;
 #define REG_0BH_IS_STATION_SHIFT 8
 #define REG_0BH_RSSI_SHIFT 9
 
+// Register 0x10 (READ)
+#define REG_10H_BLKC_ERR_SHIFT 14
+#define REG_10H_BLKD_ERR_SHIFT 12
+
 
 //////////////////////////////////////
 // - REGISTER BIT MASKS
@@ -270,12 +284,16 @@ extern const chan_spacing_t CHAN_SPACING_25;
 #define REG_0AH_RDS_READY_MASK 0x01
 
 // Register 0x0B (READ)
-#define REG_0BH_BLKB_ERR_MASK0x03
+#define REG_0BH_BLKB_ERR_MASK 0x03
 #define REG_0BH_BLKA_ERR_MASK 0x03
 #define REG_0BH_ABCD_E_MASK 0x01
 #define REG_0BH_FM_READY_MASK 0x01
 #define REG_0BH_IS_STATION_MASK 0x01
 #define REG_0BH_RSSI_MASK 0x3F
 
+
+// Register 0x10 (READ)
+#define REG_10H_BLKC_ERR_MASK 0x03
+#define REG_10H_BLKD_ERR_MASK 0x03
 
 #endif

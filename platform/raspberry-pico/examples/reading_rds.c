@@ -35,19 +35,23 @@ int main() {
 
   bool new_group;
   rds_data_t rds;
+  rds_group_t g;
+
+  uint16_t good_pi = 0;
+  uint16_t bad_pi = 0;
 
   while (true) {
     rda5807m_is_rds_ready(&handle, &new_group);
 
     if (!new_group) {
-      sleep_ms(150);
+      sleep_ms(300);
       continue;
     } 
 
     rda5807m_process_rds(&handle, &rds);
 
     if (rds.updated & RDS_UPDATE_DATETIME) {
-      printf("==================\n");
+      printf("\n==================\n");
       printf("Date: %d. %d. 20%02d\n", rds.dt.day, rds.dt.month, rds.dt.year);
       printf("Time: %02d:%02d\n", rds.dt.hour, rds.dt.minute);
     }

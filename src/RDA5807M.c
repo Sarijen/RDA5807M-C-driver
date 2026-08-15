@@ -134,6 +134,53 @@ rda_status_t rda5807m_get_raw_rds(const rda5807m_t* handle, rds_group_t* new_gro
 }
 
 
+rda_status_t rda5807m_rds_errors_found(const rda5807m_t* handle, bool* errors_found) {
+  if (errors_found == NULL) {return RDA_ERR_INVALID_ARG;}
+  rda_status_t r = validate_handle(handle);
+
+  uint16_t temp_reg_0BH;
+  uint16_t temp_reg_10H;
+  uint16_t error_bits;
+
+  r = reg_read_direct(handle, RDA5807M_REG_0BH, &temp_reg_0BH);
+  if (r != RDA_OK) {return r;}
+
+  r = reg_read_direct(handle, RDA5807M_REG_10H, &temp_reg_10H);
+  if (r != RDA_OK) {return r;}
+
+  // BLOCK A
+  reg_get_bits(temp_reg_0BH, REG_0BH_BLKA_ERR_SHIFT, REG_0BH_BLKA_ERR_MASK, &error_bits);
+  if (error_bits > 0) {
+    *errors_found = true;
+    return r;
+  }
+
+  // BLOCK B
+  reg_get_bits(temp_reg_0BH, REG_0BH_BLKB_ERR_SHIFT, REG_0BH_BLKB_ERR_MASK, &error_bits);
+  if (error_bits > 0) {
+    *errors_found = true;
+    return r;
+  }
+
+  // BLOCK C
+  reg_get_bits(temp_reg_10H, REG_10H_BLKC_ERR_SHIFT, REG_10H_BLKC_ERR_MASK, &error_bits);
+  if (error_bits > 0) {
+    *errors_found = true;
+    return r;
+  }
+
+  // BLOCK D
+  reg_get_bits(temp_reg_10H, REG_10H_BLKD_ERR_SHIFT, REG_10H_BLKD_ERR_MASK, &error_bits);
+  if (error_bits > 0) {
+    *errors_found = true;
+    return r;
+  }
+
+  *errors_found = false;
+  return r;
+}
+
+
 rda_status_t rda5807m_is_rds_ready(const rda5807m_t* handle, bool* is_ready) {
   if (is_ready == NULL) {return RDA_ERR_INVALID_ARG;}
   rda_status_t r = validate_handle(handle);
@@ -141,13 +188,23 @@ rda_status_t rda5807m_is_rds_ready(const rda5807m_t* handle, bool* is_ready) {
 
   uint16_t temp_reg;
   uint16_t rds_ready_bit;
+  bool errors_found = false;
+
 
   r = reg_read_direct(handle, RDA5807M_REG_0AH, &temp_reg);
   if (r != RDA_OK) {return r;}
 
   reg_get_bits(temp_reg, REG_0AH_RDS_READY_SHIFT, REG_0AH_RDS_READY_MASK, &rds_ready_bit);
 
-  *is_ready = rds_ready_bit;
+
+  // Consider group not ready if errors found
+  r = rda5807m_rds_errors_found(handle, &errors_found);
+
+  if (errors_found || r != RDA_OK) {
+    *is_ready = false;
+  } else {
+    *is_ready = rds_ready_bit;
+  }
 
   return r;
 }
@@ -237,6 +294,13 @@ rda_status_t rda5807m_enable_rds(rda5807m_t* handle, bool enabled) {
 
   reg_set_bits(&handle->reg_02H, REG_02H_RDS_EN_SHIFT, REG_02H_RDS_EN_MASK, enabled);
   r = reg_write_direct(handle, RDA5807M_REG_02H, handle->reg_02H);
+  if (r != RDA_OK) {return r;}
+
+  // RDS Verbose mode
+  // The datasheet doesn't say how to enable it
+  // However it can be turned on regardless:
+  // https://hackaday.io/project/9009-arduino-radio-with-rds/discussion-98182
+  r = reg_write_direct(handle, RDA5807M_REG_56H, 0xAEFF);
 
   if (r == RDA_OK) {
     handle->rds_enabled = enabled;
