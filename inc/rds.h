@@ -13,9 +13,12 @@ https://www.rdsforum.org/2010/RDS-Specification.htm
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define GROUP_A 0
 #define GROUP_B 1
+
+#define RT_MAX_STRING_SIZE 64
 
 typedef struct {
   uint16_t block_a;
@@ -27,7 +30,6 @@ typedef struct {
   bool variant;
 } rds_group_t;
 
-
 typedef struct {
   uint8_t year;
   uint8_t month;
@@ -35,6 +37,12 @@ typedef struct {
   uint8_t hour;
   uint8_t minute;
 } rds_datetime_t;
+
+typedef struct {
+  char str[RT_MAX_STRING_SIZE + 1];
+  char str_buff[RT_MAX_STRING_SIZE + 1];
+  bool ab_flag;
+} rds_radiotext_t;
 
 
 typedef enum {
@@ -73,6 +81,7 @@ typedef enum {
 } PTY;
 
 
+bool rds_get_radiotext(const rds_group_t* g, rds_radiotext_t* rt);
 void rds_get_datetime(const rds_group_t* g, rds_datetime_t* dt);
 bool rds_get_tp(const rds_group_t* g);
 PTY rds_get_pty(const rds_group_t* g);

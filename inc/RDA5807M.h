@@ -90,6 +90,7 @@ typedef struct {
 
 
 typedef struct {
+  rds_radiotext_t rt;
   rds_datetime_t dt;
   uint32_t updated;
 
