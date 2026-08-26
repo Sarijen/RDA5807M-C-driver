@@ -94,12 +94,15 @@ rda_status_t rda5807m_process_rds(const rda5807m_t* handle, rds_data_t* rds) {
   bool variant = g.variant;
 
   if (type == 0) {
-  // TODO: PS
+    if (rds_get_ps(&g, &rds->ps)) {
+      rds->updated = RDS_UPDATE_PS;
+    }
 
   } else if (type == 2) {
     if (rds_get_radiotext(&g, &rds->rt)) {
       rds->updated = RDS_UPDATE_RT;
     }
+
   } else if (type == 4 && variant == GROUP_A) {
     rds_get_datetime(&g, &rds->dt);
     rds->updated = RDS_UPDATE_DATETIME;

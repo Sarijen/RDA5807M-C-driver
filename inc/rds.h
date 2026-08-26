@@ -44,6 +44,11 @@ typedef struct {
   bool ab_flag;
 } rds_radiotext_t;
 
+typedef struct {
+  char str[9];
+  char str_buff[9];
+} rds_ps_t;
+
 
 typedef enum {
   PTY_UNDEFINED = 0,
@@ -80,7 +85,7 @@ typedef enum {
   ALARM
 } PTY;
 
-
+bool rds_get_ps(const rds_group_t* g, rds_ps_t* ps);
 bool rds_get_radiotext(const rds_group_t* g, rds_radiotext_t* rt);
 void rds_get_datetime(const rds_group_t* g, rds_datetime_t* dt);
 bool rds_get_tp(const rds_group_t* g);

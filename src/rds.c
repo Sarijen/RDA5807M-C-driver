@@ -12,6 +12,38 @@ https://www.rdsforum.org/2010/RDS-Specification.htm
 #include "rds.h"
 
 
+bool rds_get_ps(const rds_group_t* g, rds_ps_t* ps) {
+  bool text_updated = false;
+
+  uint8_t seg = (g->block_b & 0x03) << 1;
+
+  char new_chars[2] = {
+    g->block_d >> 8,
+    g->block_d & 0xFF,
+  };
+
+
+// Every char has to be received twice to get written to the final string
+// Skip if the same char already was written
+  for (uint8_t ch = 0; ch < 2; ch++) {
+    if (new_chars[ch] == ps->str_buff[seg + ch] &&
+        ps->str[seg + ch] != ps->str_buff[seg + ch]) {
+
+      text_updated = true;
+      ps->str[seg + ch] = ps->str_buff[seg + ch];
+    } else {
+      ps->str_buff[seg + ch] = new_chars[ch];
+    }
+  }
+
+  if (text_updated) {
+    ps->str[8] = '\0';
+  }
+  
+  return text_updated;
+}
+
+
 bool rds_get_radiotext(const rds_group_t* g, rds_radiotext_t* rt) {
   bool text_updated = false;
   bool ab_flag_new = (g->block_b >> 4) & 0x01;
@@ -35,9 +67,10 @@ bool rds_get_radiotext(const rds_group_t* g, rds_radiotext_t* rt) {
       g->block_d & 0xFF,
     };
 
-    for (uint8_t ch = 0; ch < 4; ch++) {
+
 // Every char has to be received twice to get written to the final string
 // Skip if the same char already was written
+    for (uint8_t ch = 0; ch < 4; ch++) {
       if (new_chars[ch] == rt->str_buff[seg + ch] &&
           rt->str[seg + ch] != rt->str_buff[seg + ch]) {
 
@@ -50,7 +83,7 @@ bool rds_get_radiotext(const rds_group_t* g, rds_radiotext_t* rt) {
 
   } else { // GROUP B (2 chars)
 // TO-DO
-// Data was wrong every time for some reason
+// Data is wrong every time for some reason
   }
 
 
